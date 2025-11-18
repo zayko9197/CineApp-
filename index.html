@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Series JS Ultra Editable – Final</title>
+<style>
+:root{
+  --bg:#06060a;
+  --card:#0f1115;
+  --accent:#e50914;
+  --white:#e6e6e6;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--white);font-family:Inter,Roboto,sans-serif;}
+header{padding:20px;border-bottom:1px solid rgba(255,255,255,0.02);}
+header h1{font-size:18px;}
+.container{padding:20px 24px 80px;}
+.section{margin:20px 0;}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.title{font-weight:700;font-size:16px;}
+
+/* ===== CARRUSEL SUAVE ===== */
+.carousel{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  padding:12px 6px;
+  scroll-behavior: smooth;           /* DESPLAZAMIENTO SUAVE */
+  -webkit-overflow-scrolling:touch; /* iOS smooth */
+  cursor:grab;
+}
+.carousel::-webkit-scrollbar{display:none;}
+
+.card{
+  min-width:170px;
+  flex:0 0 auto;
+  border-radius:8px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:transform .2s;
+  height:240px;
+  background-color:transparent;
+  padding:0;
+}
+.card:hover{transform:translateY(-6px);}
+.thumb{
+  width:100%;
+  height:100%;
+  background-size:cover;
+  background-position:center;
+}
+
+/* ===== MODAL ===== */
+.modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:50;}
+.modal{background:var(--card);max-width:900px;width:100%;border-radius:10px;padding:16px;position:relative;}
+.close{position:absolute;top:10px;right:12px;background:transparent;border:0;color:white;font-size:20px;cursor:pointer;}
+.modal-grid{display:grid;grid-template-columns:280px 1fr;gap:12px;}
+.modal-thumb{width:100%;height:160px;border-radius:6px;background-size:cover;background-position:center;}
+.seasons{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
+.season-btn{padding:12px;border-radius:10px;border:1px solid var(--accent);background:var(--card);color:white;font-weight:600;cursor:pointer;transition:.2s;}
+.season-btn:hover{background:var(--accent);transform:scale(1.05);}
+.season-btn.active{background:var(--accent);color:white;border-color:var(--accent);}
+
+/* ===== CAPÍTULOS CON SCROLL SI SOBRAN ===== */
+.episodes {
+  display: flex;
+  flex-direction: column;  /* vertical */
+  gap: 8px;
+  max-height: 300px;       /* altura máxima del área de capítulos */
+  overflow-y: auto;        /* scroll vertical si hay muchos capítulos */
+  padding-right: 6px;      /* espacio para scroll */
+}
+.episodes::-webkit-scrollbar {
+  width: 6px;
+}
+.episodes::-webkit-scrollbar-thumb {
+  background-color: var(--accent);
+  border-radius: 3px;
+}
+.episode{ 
+  flex:0 0 auto;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.03);
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(0,0,0,0.04));
+  cursor:pointer;
+  transition:.2s;
+}
+.episode:hover{transform:scale(1.03);}
+.play-link{background:var(--accent);color:white;padding:6px 10px;border-radius:6px;border:0;cursor:pointer;font-size:13px;}
+
+@media(max-width:760px){.modal-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header><h1>CineApp series </h1></header>
+<main class="container" id="app"></main>
+
+<!-- Modal -->
+<div id="modalBack" class="modal-back" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button id="modalClose" class="close">✕</button>
+    <div>
+      <h2 id="modalTitle">Título</h2>
+      <div class="modal-grid">
+        <div>
+          <div id="modalThumb" class="modal-thumb"></div>
+          <div id="modalInfo" style="margin-top:10px;color:var(--white);font-size:13px"></div>
+        </div>
+        <div>
+          <div id="modalSeasons" class="seasons"></div>
+          <div id="modalEpisodes" class="episodes"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// =======================
+// ARREGLO DE SERIES (editable)
+// =======================
+const SERIES=[
+  {
+    categoria:'Populares',
+    titulo:'Monstruo: La historia de Ed Gein',
+    imagen:'https://www.lavanguardia.com/peliculas-series/images/serie/poster/2025/10/w1280/2RVFksm4DF17XZSXMVbNh1qDSOr.jpg',
+    temporadas:[
+      {numero:1, capitulos:[
+        {titulo:'Ep 1', link:'https://dingtezuni.com/v/06e80mjv820r'},{titulo:'Ep 2', link:'https://dingtezuni.com/v/afb9w0c2tnvu'},{titulo:'Ep 3', link:'https://dingtezuni.com/v/bx4bldf7vfyt'},
+        {titulo:'Ep 4', link:'https://dingtezuni.com/v/gslcyxyqmlew'},{titulo:'Ep 5', link:'https://dingtezuni.com/v/f198ymk6p64j'},{titulo:'Ep 6', link:'https://dingtezuni.com/v/zlziv1rcnac5'},
+        {titulo:'Ep 7', link:'https://dingtezuni.com/v/jnn7a3k27hps'},{titulo:'Ep 8', link:'https://dingtezuni.com/v/we7jwjhdw57i'}
+      ]},
+      
+    ]
+  },
+
+{
+
+    categoria:'Populares',
+    titulo:'Peacemaker',
+    imagen:'https://m.media-amazon.com/images/M/MV5BZDIyMGU2NTktOTM3YS00OTRjLWJiMmItNDEyNjVhZTZiZGUxXkEyXkFqcGc@._V1_.jpg',
+    temporadas:[
+      {numero:1, capitulos:[
+        {titulo:'Ep 1', link:'https://mivalyo.com/v/alodm6z0d6fa'},{titulo:'Ep 2', link:'https://mivalyo.com/v/fizem6xdpbi6'},{titulo:'Ep 3', link:'https://mivalyo.com/v/3eeq3g54huf2'},
+        {titulo:'Ep 4', link:'https://mivalyo.com/v/ae9yprwgn5c5'},{titulo:'Ep 5', link:'https://mivalyo.com/v/95ruz284qvb1'},{titulo:'Ep 6', link:'https://mivalyo.com/v/ln0bgxumof8w'},
+        {titulo:'Ep 7', link:'https://mivalyo.com/v/6epqltkd2mpj'},{titulo:'Ep 8', link:'https://mivalyo.com/v/nbmw2iljj9ng'}
+      ]},
+{numero:2, capitulos:[{titulo:'Ep 1', link:'https://mivalyo.com/v/i2dzh4kt0qdt'},
+{titulo:'Ep 2', link:'https://mivalyo.com/v/7mynxv1fv2xt'},
+{titulo:'Ep 3', link:'https://bingezove.com/v/z90szzrjg8un'},{titulo:'Ep 4', link:'https://dingtezuni.com/v/vg8gjxevm0az'},{titulo:'Ep 5', link:'https://dingtezuni.com/v/k2mysrbxvief'},{titulo:'Ep 6', link:'https://dingtezuni.com/v/y4jqrg7jqfig'},{titulo:'Ep 7', link:'https://dingtezuni.com/v/0s0nqmkkvg9u'},{titulo:'Ep 8', link:'https://dingtezuni.com/v/g8yc31ii1tda'}]}
+      
+    ]
+  },
+
+{
+    categoria:'Populares',
+    titulo:'daryl Dixon',
+    imagen:'https://m.media-amazon.com/images/M/MV5BZjFlYzg4M2ItZjlmZC00MTA2LWJlZTgtODdlZmZjNWRkMzI5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg',
+    temporadas:[
+      {numero:1, capitulos:[
+        {titulo:'Ep 1', link:'https://vimeos.net/embed-yb9yfhis4y5a.html'},{titulo:'Ep 2', link:'https://vimeos.net/embed-340qhe5bve6n.html'},{titulo:'Ep 3', link:'https://vimeos.net/embed-4bnql5xh133h.html"'},{titulo:'Ep 4', link:'https://vimeos.net/embed-0389b4m1vbji.html'},
+        {titulo:'Ep 5', link:'https://vimeos.net/embed-jnupm0aq6twy.html'},{titulo:'Ep 6', link:'https://vimeos.net/embed-zu9unz6rkktg.html'}
+      ]},
+
+{numero:2, capitulos:[{titulo:'Ep 1', link:'#'},
+{titulo:'Ep 2', link:'#'},
+{titulo:'Ep 3', link:'#'},{titulo:'Ep 4', link:'#'},
+{titulo:'Ep 5', link:'#'},{titulo:'Ep 6', link:'#'}]},
+
+{numero:3, capitulos:[{titulo:'Ep 1', link:'#'},
+{titulo:'Ep 2', link:'#'},
+{titulo:'Ep 3', link:'#'},{titulo:'Ep 4', link:'#'},
+{titulo:'Ep 5', link:'#'},{titulo:'Ep 6', link:'#'}]}
+
+
+     
+    ]
+  },
+
+{
+    categoria:'Populares',
+    titulo:'Marvel Zombies',
+    imagen:'https://m.media-amazon.com/images/M/MV5BNGNkYjI3ZWUtN2MzMS00NDg5LWE5MmYtZGE4Zjc0OGVhODM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg',
+    temporadas:[
+      {numero:1, capitulos:[
+        {titulo:'Ep 1', link:'https://dingtezuni.com/v/l1f2r57etiqu'},{titulo:'Ep 2', link:'https://dingtezuni.com/v/y4po57ki15mn'},{titulo:'Ep 3', link:'https://dingtezuni.com/v/calc80037gjf'},
+        {titulo:'Ep 4', link:'https://dingtezuni.com/v/73xn34n8nttf'}
+      ]},
+      
+    ]
+  },
+
+
+
+{
+    categoria:'Populares',
+    titulo:'Dulce hogar',
+    imagen:'https://mx.web.img3.acsta.net/pictures/21/05/28/06/44/0539775.jpg',
+    temporadas:[
+      {numero:1, capitulos:[
+        {titulo:'Ep 1', link:'https://movearnpre.com/v/wgd9weaibdmp'},{titulo:'Ep 2', link:'https://movearnpre.com/v/voq57q7h0kp6'},{titulo:'Ep 3', link:'https://movearnpre.com/v/7rgqh5mq2jox'},
+        {titulo:'Ep 4', link:'https://movearnpre.com/v/onkwjrrgg04y'},{titulo:'Ep 5', link:'https://movearnpre.com/v/5zggrdle6t75'},{titulo:'Ep 6', link:'https://movearnpre.com/v/6edw88xoajyx'},{titulo:'Ep 7', link:'https://movearnpre.com/v/uam6cs3dauc0'},{titulo:'Ep 8', link:'https://movearnpre.com/v/2cezx5yqbe5y'},
+        {titulo:'Ep 9', link:'https://movearnpre.com/v/psyenl166gbu'},{titulo:'Ep 10', link:'https://voe.sx/e/rltpdqxxeke4'}
+      ]},
+
+{numero:2, capitulos:[{titulo:'Ep 1', link:'https://movearnpre.com/v/eccyuhfobpnj'},{titulo:'Ep 2', link:'https://movearnpre.com/v/0rh26536ogka'},{titulo:'Ep 3', link:'https://movearnpre.com/v/sk854gy1amqk'},{titulo:'Ep 4', link:'https://movearnpre.com/v/8vmxexkcux77'},{titulo:'Ep 5', link:'https://movearnpre.com/v/ot36o00i2w6t'},{titulo:'Ep 6', link:'https://movearnpre.com/v/31tzo0dqykhh'},{titulo:'Ep 7', link:'https://movearnpre.com/v/d8qpqgfwbjh2'},{titulo:'Ep 8', link:'https://movearnpre.com/v/9im6tjevuqun'}]},
+
+{numero:3, capitulos:[{titulo:'Ep 1', link:'https://movearnpre.com/v/2le4vgjjkw17'},{titulo:'Ep 2', link:'https://movearnpre.com/v/fhfi3wqfbiqk'},{titulo:'Ep 3', link:'https://movearnpre.com/v/yirlzvh2s8xq'},{titulo:'Ep 4', link:'https://movearnpre.com/v/a91aafom6umx'},{titulo:'Ep 5', link:'https://movearnpre.com/v/5ich453k3cfy'},{titulo:'Ep 6', link:'https://movearnpre.com/v/e26offxslb4t'},{titulo:'Ep 7', link:'https://movearnpre.com/v/m3u74700xqj9'},{titulo:'Ep 8', link:'https://movearnpre.com/v/83uzk0rp6zrc'}]}
+
+      
+    ]
+  },
+
+
+
+{ title: "Acción 1", image: "#", seasons: [
+            { season: 1, chapters: [{name:"Capítulo 1", link:"#"}, {name:"Capítulo 2", link:"#"}] },
+            { season: 2, chapters: [{name:"Capítulo 1", link:"#"}] }
+        ]},
+
+  {
+    categoria:'Drama',
+    titulo:'Drama 1',
+    imagen:'https://via.placeholder.com/400x240?text=Drama+1',
+    temporadas:[
+      {numero:1, capitulos:[{titulo:'Ep 1', link:'#'},{titulo:'Ep 2', link:'#'}]},
+      {numero:2, capitulos:[{titulo:'Ep 1', link:'#'},{titulo:'Ep 2', link:'#'}]}
+    ]
+  },
+  {
+    categoria:'Comedia',
+    titulo:'Comedia 1',
+    imagen:'https://via.placeholder.com/400x240?text=Comedia+1',
+    temporadas:[
+      {numero:1, capitulos:[{titulo:'Ep 1', link:'#'},{titulo:'Ep 2', link:'#'}]},
+      {numero:2, capitulos:[{titulo:'Ep 1', link:'#'},{titulo:'Ep 2', link:'#'}]}
+    ]
+  },
+  {
+    categoria:'Anime/Fantasía',
+    titulo:'Anime 1',
+    imagen:'https://via.placeholder.com/400x240?text=Anime+1',
+    temporadas:[
+      {numero:1, capitulos:[{titulo:'Ep 1', link:'#'},{titulo:'Ep 2', link:'#'}]},
+      {numero:2, capitulos:[{titulo:'Ep 1', link:'#'},{titulo:'Ep 2', link:'#'}]}
+    ]
+  }
+];
+
+// =======================
+// CREAR CARRUSELES Y TARJETAS
+// =======================
+const CATEGORIES=['Populares','Drama','Comedia','Anime/Fantasía'];
+const app=document.getElementById('app');
+
+CATEGORIES.forEach(cat=>{
+  const section=document.createElement('section');
+  section.className='section';
+  section.innerHTML=`
+    <div class="section-title"><div class="title">${cat}</div></div>
+    <div class="carousel" id="carousel-${cat}"></div>
+  `;
+  app.appendChild(section);
+
+  const carousel=section.querySelector('.carousel');
+  SERIES.filter(s=>s.categoria===cat).forEach(serie=>{
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`<div class="thumb" style="background-image:url('${serie.imagen}')"></div>`;
+    card.addEventListener('click',()=>openModal(serie));
+    carousel.appendChild(card);
+  });
+});
+
+// =======================
+// MODAL TEMPORADAS Y CAPÍTULOS
+// =======================
+const modalBack=document.getElementById('modalBack'),
+      modalTitle=document.getElementById('modalTitle'),
+      modalThumb=document.getElementById('modalThumb'),
+      modalSeasons=document.getElementById('modalSeasons'),
+      modalEpisodes=document.getElementById('modalEpisodes'),
+      modalInfo=document.getElementById('modalInfo'),
+      modalClose=document.getElementById('modalClose');
+
+function openModal(serie){
+  modalTitle.textContent=serie.titulo;
+  modalThumb.style.backgroundImage=`url('${serie.imagen}')`;
+  modalInfo.textContent=`${serie.temporadas.length} temporadas • Haz clic en una temporada`;
+  modalSeasons.innerHTML=''; modalEpisodes.innerHTML='';
+
+  serie.temporadas.forEach((t,idx)=>{
+    const btn=document.createElement('button');
+    btn.className='season-btn'; btn.textContent='Temporada '+t.numero;
+    btn.addEventListener('click', ()=>{
+      Array.from(modalSeasons.children).forEach(ch=>ch.classList.remove('active'));
+      btn.classList.add('active');
+      showEpisodes(t);
+    });
+    modalSeasons.appendChild(btn);
+    if(idx===0){btn.classList.add('active'); showEpisodes(t);}
+  });
+
+  modalBack.style.display='flex';
+  modalBack.setAttribute('aria-hidden','false');
+  modalClose.focus();
+}
+
+function showEpisodes(temporada){
+  modalEpisodes.innerHTML='';
+  temporada.capitulos.forEach(cap=>{
+    const div=document.createElement('div'); div.className='episode';
+    div.innerHTML=`<div>${cap.titulo}</div><div><button class="play-link">▶ Ver</button></div>`;
+    div.querySelector('.play-link').addEventListener('click', e=>{
+      e.stopPropagation();
+      window.open(cap.link,'_blank');
+    });
+    modalEpisodes.appendChild(div);
+  });
+}
+
+function closeModal(){modalBack.style.display='none'; modalBack.setAttribute('aria-hidden','true'); modalSeasons.innerHTML=''; modalEpisodes.innerHTML='';}
+modalClose.addEventListener('click', closeModal);
+modalBack.addEventListener('click', e=>{if(e.target===modalBack)closeModal();});
+document.addEventListener('keydown', e=>{if(e.key==='Escape' && modalBack.style.display==='flex')closeModal();});
+</script>
+</body>
+</html>
