@@ -2,830 +2,439 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CinemaX Premium Mobile</title>
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineMax - Películas y Series en Streaming</title>
     
-    <!-- --- NUEVO: SDK OFICIAL DE GOOGLE CHROMECAST --- -->
-    <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        /* --- VARIABLES DE TEMA ADAPTATIVAS (POR DEFECTO OSCURO) --- */
+        /* ==========================================================================
+           VARIABLES Y CONFIGURACIÓN BASE
+           ========================================================================== */
         :root {
-            --bg-black: #000000;
-            --bg-card: #16161a;
-            --bg-pill: #1f1f24;
-            --accent-color: #8b5cf6; 
-            --text-white: #ffffff;
-            --text-gray: #a1a1aa;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --shadow-top10: #000000;
-            --player-bg: #09090b;
+            --bg-color: #0f1014;
+            --card-bg: #1a1c23;
+            --accent-color: #e50914; /* Rojo cinematográfico */
+            --text-color: #ffffff;
+            --text-secondary: #9ca3af;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        /* --- VARIABLES PARA MODO CLARO --- */
-        [data-theme="light"] {
-            --bg-black: #f4f4f5;
-            --bg-card: #ffffff;
-            --bg-pill: #e4e4e7;
-            --text-white: #09090b;
-            --text-gray: #71717a;
-            --border-color: rgba(0, 0, 0, 0.08);
-            --shadow-top10: #ffffff;
-            --player-bg: #f4f4f5;
-        }
-
-        /* --- CONFIGURACIÓN DE FUENTES --- */
-        body.font-small { font-size: 13px; }
-        body.font-small h1 { font-size: 1.5rem; }
-        body.font-normal { font-size: 16px; }
-        body.font-large { font-size: 19px; }
-        body.font-large h1 { font-size: 2.1rem; }
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            transition: background-color 0.25s, color 0.25s, border-color 0.25s;
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--bg-black);
-            color: var(--text-white);
-            padding-bottom: 110px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* --- PANTALLA DE CARGA (SPLASH SCREEN) --- */
-        .splash-screen {
-            position: fixed;
+        /* ==========================================================================
+           HEADER / NAVEGACIÓN (Sólido y elegante desde el inicio)
+           ========================================================================== */
+        header {
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #000000;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .splash-logo {
-            font-size: 3rem;
-            font-weight: 900;
-            color: #ffffff;
-            letter-spacing: -1px;
-            opacity: 0;
-            transform: scale(0.85);
-            animation: splashPop 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        .splash-logo span {
-            color: var(--accent-color);
-        }
-        .splash-screen.fade-out {
-            opacity: 0;
-            transform: translateY(-30px);
-            pointer-events: none;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(15, 16, 20, 0.98);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            padding: 15px 0;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        @keyframes splashPop {
-            0% { opacity: 0; transform: scale(0.8) rotate(-3deg); filter: blur(4px); }
-            50% { opacity: 1; filter: blur(0px); }
-            100% { opacity: 1; transform: scale(1.1) rotate(0deg); text-shadow: 0 0 20px rgba(139, 92, 246, 0.4); }
-        }
-
-        /* --- HEADER PRINCIPAL --- */
-        .main-header {
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 16px 4px 16px;
+            padding: 0 40px;
         }
-        .main-header h1 {
-            font-size: 1.4rem;
+
+        .logo {
+            font-size: 28px;
             font-weight: 800;
-            letter-spacing: -0.5px;
+            letter-spacing: 1px;
+            cursor: pointer;
         }
-        .main-header h1 span {
+
+        .logo span {
             color: var(--accent-color);
         }
-        .settings-trigger {
-            background: var(--bg-pill);
-            border: none;
-            color: var(--text-white);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-color);
+        }
+
+        /* Buscador */
+        .search-box {
+            position: relative;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
+        }
+
+        .search-box input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid transparent;
+            padding: 8px 15px;
+            padding-right: 35px;
+            border-radius: 20px;
+            color: white;
+            outline: none;
+            transition: all 0.3s ease;
+            width: 220px;
+        }
+
+        .search-box input:focus {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent-color);
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        /* ==========================================================================
+           CONTENIDO Y TARJETAS (GRID)
+           ========================================================================== */
+        .content-container {
+            max-width: 1400px;
+            margin: 40px auto 0 auto;
+            position: relative;
+            z-index: 10;
+            padding: 0 40px;
+        }
+
+        .movie-section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 22px;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .movie-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
             cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s;
+            aspect-ratio: 16/10;
         }
 
-        /* --- BUSCADOR --- */
-        .search-container-box { padding: 0 16px; margin-top: 12px; margin-bottom: 16px; display: none; }
-        .search-container-box.show { display: block; }
-        .search-input-wrapper {
-            display: flex; background-color: var(--bg-pill); padding: 12px 16px;
-            border-radius: 14px; align-items: center; gap: 10px; border: 1px solid transparent;
-        }
-        .search-input-wrapper:focus-within { border-color: var(--accent-color); }
-        .search-input-wrapper input { background: none; border: none; color: var(--text-white); width: 100%; font-size: 1rem; outline: none; }
-
-        /* --- PANTALLAS --- */
-        .page-view { display: none; }
-        .page-view.active-view { display: block; }
-
-        /* --- BOTONES DE ACCIÓN RÁPIDA --- */
-        .quick-actions { display: flex; gap: 10px; padding: 0 16px; margin-bottom: 20px; }
-        .pill-btn {
-            background-color: var(--bg-pill); color: var(--text-white); border: none;
-            padding: 10px 18px; border-radius: 25px; font-weight: 600; font-size: 0.85rem;
-            display: flex; align-items: center; gap: 8px; cursor: pointer;
+        .movie-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-color: #2a2d37;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
-        /* --- HERO BANNER ANIMADO --- */
-        .hero-container { padding: 0 16px; margin-bottom: 16px; }
-        .hero-card {
-            position: relative; height: 230px; border-radius: 24px; overflow: hidden;
-            background-size: cover; background-position: center 30%;
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; cursor: pointer;
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(15, 16, 20, 0.95) 20%, rgba(15, 16, 20, 0.4) 60%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Efectos Hover */
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(229, 9, 20, 0.25);
+        }
+
+        .movie-card:hover img {
+            transform: scale(1.08);
+        }
+
+        .movie-card:hover .card-overlay {
             opacity: 1;
-            transition: opacity 0.4s ease-in-out, background-image 0.4s ease-in-out;
         }
-        .hero-card.fade-out { opacity: 0; }
-        
-        .badge-movie {
-            position: absolute; top: 20px; left: 20px; background-color: var(--accent-color);
-            color: white; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;
+
+        .card-overlay h4 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            font-weight: 600;
         }
-        .hero-card h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-        .hero-meta { display: flex; gap: 8px; font-size: 0.8rem; color: #f4f4f5; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
 
-        /* Indicadores de Slider (Puntos) */
-        .slider-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 24px; }
-        .dot { width: 6px; height: 6px; background-color: var(--bg-pill); border-radius: 50%; transition: 0.3s; }
-        .dot.active { width: 20px; background-color: var(--accent-color); border-radius: 4px; }
-
-        /* --- CONTENEDORES DE CAROUSEL --- */
-        .section-container { margin-bottom: 28px; }
-        .section-title-bar { display: flex; justify-content: space-between; align-items: center; padding: 0 16px; margin-bottom: 14px; }
-        .section-title-bar h2 { font-size: 1.15rem; font-weight: 700; }
-        .btn-view-more { background-color: var(--bg-pill); color: var(--text-white); border: none; padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
-
-        .horizontal-scroll { display: flex; gap: 14px; overflow-x: auto; padding: 0 16px; }
-        .horizontal-scroll::-webkit-scrollbar { display: none; }
-
-        /* --- TARJETAS POSTERS --- */
-        .movie-poster-card { flex: 0 0 130px; position: relative; }
-        .poster-wrapper { width: 100%; height: 185px; border-radius: 16px; overflow: hidden; background-color: var(--bg-card); cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .poster-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .fav-toast-btn {
-            position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); border: none; color: white;
-            width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; cursor: pointer; z-index: 5;
+        .rating {
+            color: #ffc107;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
-        .fav-toast-btn.is-fav { color: var(--accent-color) !important; }
 
-        /* --- COMPONENTE TOP 10 --- */
-        .top10-card { flex: 0 0 165px; position: relative; display: flex; align-items: flex-end; height: 190px; margin-left: 15px; }
-        .top10-number {
-            font-size: 7.5rem; font-weight: 900; line-height: 1; position: absolute; left: -20px; bottom: -15px; z-index: 2; color: var(--shadow-top10);
-            text-shadow: 2px 2px 0px var(--accent-color), -2px -2px 0px var(--accent-color), 2px -2px 0px var(--accent-color), -2px 2px 0px var(--accent-color);
-            user-select: none;
+        /* ==========================================================================
+           REPRODUCTOR DE TRAILERS (MODAL POPUP)
+           ========================================================================== */
+        .video-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
         }
-        .top10-poster { width: 120px; height: 170px; border-radius: 12px; overflow: hidden; z-index: 3; margin-left: auto; background-color: var(--bg-card); cursor: pointer; }
-        .top10-poster img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- PÁGINA DE AJUSTES --- */
-        .settings-list { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .settings-group { background-color: var(--bg-card); border-radius: 16px; padding: 16px; box-shadow: 0 4px 14px rgba(0,0,0,0.04); }
-        .settings-group-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; padding-left: 4px; letter-spacing: 0.5px; }
-        .settings-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-color); }
-        .settings-item:last-child { border-bottom: none; }
-        .settings-text h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 2px; }
-        .settings-text p { font-size: 0.78rem; color: var(--text-gray); }
-        
-        .switch-control { position: relative; display: inline-block; width: 46px; height: 26px; }
-        .switch-control input { opacity: 0; width: 0; height: 0; }
-        .slider-toggle { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .3s; border-radius: 34px; }
-        .slider-toggle:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider-toggle { background-color: var(--accent-color); }
-        input:checked + .slider-toggle:before { transform: translateX(20px); }
-
-        .settings-select { background-color: var(--bg-pill); color: var(--text-white); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; outline: none; }
-
-        /* --- REPRODUCTOR (CAJA FUERTE ANTI-ANUNCIOS) --- */
-        .player-modal {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--player-bg); z-index: 2000; display: none; flex-direction: column;
+        .video-modal.active {
+            opacity: 1;
+            pointer-events: auto;
         }
-        .player-modal.open { display: flex; }
-        .player-header { 
-            padding: 16px; display: flex; align-items: center; gap: 15px; 
-            font-size: 1.1rem; font-weight: 700; background-color: var(--bg-card); 
-            color: var(--text-white); border-bottom: 1px solid var(--border-color);
+
+        .modal-content {
+            width: 90%;
+            max-width: 900px;
+            aspect-ratio: 16/9;
+            position: relative;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
-        .player-header i { cursor: pointer; font-size: 1.5rem; color: var(--text-white); }
-        
-        /* --- ESTILO PARA EL BOTÓN CHROMECAST NATIVO --- */
-        .chromecast-btn {
-            margin-left: auto;
-            width: 24px;
-            height: 24px;
+
+        .modal-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 24px;
             cursor: pointer;
-            --connected-color: var(--accent-color);
-            --disconnected-color: var(--text-white);
+            background: none;
+            border: none;
         }
 
-        .video-box { width: 100%; aspect-ratio: 16/9; background-color: #000; border: none; }
-        
-        .player-details { padding: 16px; overflow-y: auto; flex: 1; color: var(--text-white); }
-        .player-details h2 { font-size: 1.4rem; font-weight: 800; }
-        .player-details p { color: var(--text-gray); margin-top: 8px; line-height: 1.4; font-size: 0.9rem; }
-        .player-meta-box { display: flex; gap: 8px; font-size: 0.8rem; color: var(--accent-color); margin: 10px 0; font-weight: 600; }
-
-        /* --- EPISODIOS --- */
-        .episodes-section { margin-top: 22px; display: none; }
-        .season-selector {
-            background-color: var(--bg-pill); color: var(--text-white); border: 1px solid var(--border-color);
-            padding: 8px 14px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; outline: none; margin-bottom: 14px;
+        /* ==========================================================================
+           FOOTER
+           ========================================================================== */
+        footer {
+            text-align: center;
+            padding: 50px 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 60px;
         }
-        .episodes-list { display: flex; flex-direction: column; gap: 8px; }
-        .episode-row { display: flex; align-items: center; background-color: var(--bg-card); padding: 12px 14px; border-radius: 12px; cursor: pointer; gap: 12px; border: 1px solid transparent; }
-        .episode-row.playing { background-color: rgba(139, 92, 246, 0.1); border-color: var(--accent-color); }
-        .episode-row i { font-size: 1.3rem; color: var(--accent-color); }
-        .episode-info { display: flex; flex-direction: column; }
-        .episode-title { font-size: 0.88rem; font-weight: 600; color: var(--text-white); }
-        .episode-duration { font-size: 0.75rem; color: var(--text-gray); margin-top: 2px; }
 
-        .grid-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; padding: 16px; }
-
-        /* --- MENU BAR --- */
-        .bottom-nav-container { position: fixed; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; z-index: 1000; padding: 0 24px; }
-        .bottom-nav {
-            background: rgba(22, 22, 26, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            width: 100%; max-width: 400px; height: 66px; border-radius: 30px; display: flex;
-            justify-content: space-around; align-items: center; border: 1px solid var(--border-color);
+        /* ==========================================================================
+           RESPONSIVE DESIGN (MÓVILES Y TABLETS)
+           ========================================================================== */
+        @media (max-width: 768px) {
+            .header-container { flex-direction: column; gap: 15px; padding: 15px 20px; }
+            .content-container { margin-top: 20px; padding: 0 20px; }
+            .movies-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+            .search-box input { width: 100%; }
+            .close-modal { top: 10px; right: 10px; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px; }
         }
-        [data-theme="light"] .bottom-nav { background: rgba(255, 255, 255, 0.85); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); text-decoration: none; font-size: 0.7rem; font-weight: 500; gap: 4px; width: 65px; }
-        .nav-item i { font-size: 1.35rem; }
-        .nav-item.active { color: var(--text-white); }
-        .nav-item.active .icon-wrapper { background-color: rgba(139, 92, 246, 0.12); padding: 4px 16px; border-radius: 16px; color: var(--accent-color); }
     </style>
 </head>
 <body>
 
-    <!-- PANTALLA DE CARGA (SPLASH SCREEN) -->
-    <div class="splash-screen" id="splashScreen">
-        <div class="splash-logo">Cinema<span>X</span></div>
-    </div>
-
-    <!-- BUSCADOR -->
-    <div class="search-container-box" id="searchBox">
-        <div class="search-input-wrapper">
-            <i class="ri-search-line"></i>
-            <input type="text" id="searchInput" placeholder="Buscar películas o series..." oninput="perfectSearch(this.value)">
-        </div>
-    </div>
-
-    <!-- PANTALLA INICIO -->
-    <div id="homePage" class="page-view active-view">
-        <header class="main-header">
-            <h1>Cinema<span>X</span></h1>
-            <button class="settings-trigger" onclick="openSettingsPage()"><i class="ri-settings-4-fill"></i></button>
-        </header>
-
-        <div class="quick-actions">
-            <button class="pill-btn" id="btnFavs" onclick="toggleQuickFilter('favs')"><i class="ri-heart-fill"></i> Favoritos</button>
-            <button class="pill-btn" id="btnHist" onclick="toggleQuickFilter('history')"><i class="ri-history-line"></i> Historial</button>
-        </div>
-
-        <!-- HERO CONTAINER ANIMADO -->
-        <div class="hero-container">
-            <div id="heroCard" class="hero-card" onclick="triggerHeroClick()"></div>
-        </div>
-        <!-- PUNTOS DEL SLIDER -->
-        <div class="slider-dots" id="heroDots"></div>
-
-        <div id="dynamicSections">
-            <!-- SECCIÓN EXCLUSIVA TOP 10 -->
-            <div class="section-container">
-                <div class="section-title-bar"><h2>Top 10 Hoy</h2></div>
-                <div class="horizontal-scroll" id="scrollTop10" style="padding-top: 10px; padding-bottom: 15px;"></div>
-            </div>
-            <div class="section-container">
-                <div class="section-title-bar"><h2>Películas Recientes</h2><button class="btn-view-more" onclick="seeAll('movie')">Ver más</button></div>
-                <div class="horizontal-scroll" id="scrollMovies"></div>
-            </div>
-            <div class="section-container">
-                <div class="section-title-bar"><h2>Sci-Fi & Terror</h2></div>
-                <div class="horizontal-scroll" id="scrollSciFi"></div>
-            </div>
-            <div class="section-container">
-                <div class="section-title-bar"><h2>Series Destacadas</h2><button class="btn-view-more" onclick="seeAll('series')">Ver más</button></div>
-                <div class="horizontal-scroll" id="scrollSeries"></div>
+    <header id="main-header">
+        <div class="header-container">
+            <h1 class="logo" onclick="window.location.reload()">Cine<span>Max</span></h1>
+            <nav class="nav-links">
+                <a href="#" class="active">Inicio</a>
+                <a href="#">Películas</a>
+                <a href="#">Series</a>
+                <a href="#">Mi Lista</a>
+            </nav>
+            <div class="search-box">
+                <input type="text" id="movie-search" placeholder="Buscar películas o series...">
+                <i class="fas fa-search"></i>
             </div>
         </div>
-    </div>
+    </header>
 
-    <!-- EXPLORAR -->
-    <div id="explorePage" class="page-view">
-        <div class="section-title-bar" style="padding: 20px 16px 0 16px;">
-            <h2 id="exploreTitle">Explorar</h2>
-            <button class="btn-view-more" onclick="goHome()">Volver</button>
-        </div>
-        <div class="grid-view" id="exploreGrid"></div>
-    </div>
-
-    <!-- PANTALLA AJUSTES -->
-    <div id="settingsPage" class="page-view">
-        <div class="section-title-bar" style="padding: 20px 16px 4px 16px;">
-            <h2>Ajustes</h2>
-            <button class="btn-view-more" onclick="goHome()">Guardar</button>
-        </div>
-        <div class="settings-list">
-            <div class="settings-group">
-                <div class="settings-group-title">Personalización de Interfaz</div>
-                <div class="settings-item">
-                    <div class="settings-text">
-                        <h4>Modo Noche / Día</h4>
-                        <p>Afecta a la App y al Reproductor Multimedia.</p>
+    <main class="content-container">
+        
+        <section class="movie-section">
+            <h3 class="section-title">Películas en Tendencia</h3>
+            <div class="movies-grid">
+                <div class="movie-card play-btn" data-video="YoHD9XEInc0">
+                    <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&auto=format&fit=crop" alt="Origen">
+                    <div class="card-overlay">
+                        <h4>Origen (Inception)</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 8.8</span>
                     </div>
-                    <label class="switch-control">
-                        <input type="checkbox" id="themeModeCheck" onchange="updateThemeSetting(this.checked)">
-                        <span class="slider-toggle"></span>
-                    </label>
                 </div>
-                <div class="settings-item">
-                    <div class="settings-text">
-                        <h4>Color Temático</h4>
-                        <p>Elige tu tono de acento preferido.</p>
+                <div class="movie-card play-btn" data-video="EXeTwQWrcwY">
+                    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=400&auto=format&fit=crop" alt="Batman">
+                    <div class="card-overlay">
+                        <h4>Batman: El Caballero de la Noche</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 9.0</span>
                     </div>
-                    <select class="settings-select" id="brandColorSelect" onchange="updateBrandColorSetting(this.value)">
-                        <option value="#8b5cf6">Violeta Premium</option>
-                        <option value="#e50914">Rojo Cinema</option>
-                        <option value="#2563eb">Azul Neón</option>
-                    </select>
                 </div>
-                <div class="settings-item">
-                    <div class="settings-text">
-                        <h4>Escala del Texto</h4>
-                        <p>Modifica el tamaño de letra general.</p>
+                <div class="movie-card play-btn" data-video="gCcx85y54qc">
+                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=400&auto=format&fit=crop" alt="Blade Runner">
+                    <div class="card-overlay">
+                        <h4>Blade Runner 2049</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 8.0</span>
                     </div>
-                    <select class="settings-select" id="fontSizeSelect" onchange="updateFontSizeSetting(this.value)">
-                        <option value="small">Pequeña</option>
-                        <option value="normal">Normal</option>
-                        <option value="large">Grande</option>
-                    </select>
+                </div>
+                <div class="movie-card play-btn" data-video="N_gD9-Oa0fg">
+                    <img src="https://images.unsplash.com/photo-1478720143033-6a972678da30?q=80&w=400&auto=format&fit=crop" alt="Sin tiempo para morir">
+                    <div class="card-overlay">
+                        <h4>Sin Tiempo para Morir</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 7.3</span>
+                    </div>
                 </div>
             </div>
-            <div class="settings-group">
-                <div class="settings-group-title">Preferencias del Reproductor</div>
-                <div class="settings-item">
-                    <div class="settings-text">
-                        <h4>Reproducción Automática</h4>
-                        <p>Los videos se inician inmediatamente al abrirse.</p>
+        </section>
+
+        <section class="movie-section">
+            <h3 class="section-title">Series Populares</h3>
+            <div class="movies-grid">
+                <div class="movie-card play-btn" data-video="b9EkMc79ZSU">
+                    <img src="https://images.unsplash.com/photo-1574375927938-d5a98e8edd86?q=80&w=400&auto=format&fit=crop" alt="Stranger Things">
+                    <div class="card-overlay">
+                        <h4>Stranger Things</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 8.7</span>
                     </div>
-                    <label class="switch-control">
-                        <input type="checkbox" id="autoplayCheck" onchange="updateAutoplaySetting(this.checked)">
-                        <span class="slider-toggle"></span>
-                    </label>
+                </div>
+                <div class="movie-card play-btn" data-video="HhesaQUpPyU">
+                    <img src="https://images.unsplash.com/photo-1616530940355-351fabd9524b?q=80&w=400&auto=format&fit=crop" alt="Breaking Bad">
+                    <div class="card-overlay">
+                        <h4>Breaking Bad</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 9.5</span>
+                    </div>
+                </div>
+                <div class="movie-card play-btn" data-video="rrwycJ08ESA">
+                    <img src="https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=400&auto=format&fit=crop" alt="Dark">
+                    <div class="card-overlay">
+                        <h4>Dark</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 8.8</span>
+                    </div>
+                </div>
+                <div class="movie-card play-btn" data-video="aOC8E8z_ifw">
+                    <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400&auto=format&fit=crop" alt="The Mandalorian">
+                    <div class="card-overlay">
+                        <h4>The Mandalorian</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 8.7</span>
+                    </div>
                 </div>
             </div>
+        </section>
+
+    </main>
+
+    <div class="video-modal" id="videoModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal"><i class="fas fa-times"></i> Cerrar</button>
+            <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
     </div>
 
-    <!-- REPRODUCTOR BLINDADO ANTI-ANUNCIOS -->
-    <div class="player-modal" id="playerModal">
-        <div class="player-header">
-            <i class="ri-arrow-left-line" onclick="closePlayer()"></i>
-            <span id="playerMovieTitle">Cargando...</span>
-            
-            <!-- BOTÓN OFICIAL DE GOOGLE CHROMECAST -->
-            <google-cast-launcher class="chromecast-btn"></google-cast-launcher>
-        </div>
-        <iframe class="video-box" id="videoPlayer" sandbox="allow-scripts allow-same-origin allow-forms" allowfullscreen></iframe>
-        <div class="player-details">
-            <h2 id="playerFullTitle">Título</h2>
-            <div class="player-meta-box" id="playerMeta"></div>
-            <p id="playerDesc">Sinopsis.</p>
-            <div class="episodes-section" id="episodesArea">
-                <select class="season-selector" id="seasonDropdown" onchange="changeSeason()"></select>
-                <div class="episodes-list" id="episodesContainer"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- NAVBAR -->
-    <div class="bottom-nav-container" id="bottomNavContainer">
-        <nav class="bottom-nav">
-            <a href="#" class="nav-item active" id="navHome" onclick="navigate('home')"><div class="icon-wrapper"><i class="ri-home-5-fill"></i></div><span>Inicio</span></a>
-            <a href="#" class="nav-item" id="navMovies" onclick="navigate('movies')"><div class="icon-wrapper"><i class="ri-clapperboard-line"></i></div><span>Películas</span></a>
-            <a href="#" class="nav-item" id="navSeries" onclick="navigate('series')"><div class="icon-wrapper"><i class="ri-slideshow-3-line"></i></div><span>Series</span></a>
-            <a href="#" class="nav-item" id="navSearch" onclick="navigate('search')"><div class="icon-wrapper"><i class="ri-search-line"></i></div><span>Buscar</span></a>
-        </nav>
-    </div>
+    <footer>
+        <p>&copy; 2026 CineMax. Diseñado con pasión para los amantes del cine y la televisión.</p>
+    </footer>
 
     <script>
-        // --- BASE DE DATOS OPTIMIZADA CON SERIES COMPLETAS ---
-        const db = [
-            // CONTENIDOS DEL HERO EXCLUSIVOS
-            { id: 201, title: "Rastreado", year: 2025, duration: "1h 55m", rating: "9.2", genre: "Acción, suspenso", type: "movie", desc: "Un rastreador experto debe internarse en territorio hostil siguiendo una pista que cambiará todo.", img: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", isHero: true },
-            { id: 202, title: "Avengers: Secret Wars", year: 2026, duration: "2h 55m", rating: "9.4", genre: "Acción", type: "movie", desc: "La batalla definitiva del multiverso donde todas las realidades colisionan.", img: "https://images.unsplash.com/photo-1635805737707-575885ab0820?q=80&w=400", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", isHero: true },
-            { id: 203, title: "Avatar: Fire and Ash", year: 2025, duration: "3h 10m", rating: "9.0", genre: "Sci-Fi", type: "movie", desc: "Jake Sully se enfrenta a una nueva y agresiva tribu de Na'vi vinculada al fuego.", img: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=400", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", isHero: true },
+        // LÓGICA DEL REPRODUCTOR DE VIDEO
+        const videoModal = document.getElementById('videoModal');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const closeModal = document.getElementById('closeModal');
+        const playButtons = document.querySelectorAll('.play-btn');
 
-            // CONTENIDOS EXCLUSIVOS DEL TOP 10 HOY
-            { id: 101, title: "El Guerrero Caído", year: 2025, duration: "2h 10m", rating: "8.9", genre: "Acción", type: "movie", desc: "Un drama medieval lleno de intrigas y espectaculares batallas.", img: "https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=400", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", isTop10: true, topRank: 1 },
-            { 
-                id: 102, 
-                title: "Stranger Things 5", 
-                year: 2026, 
-                duration: "5 Temp.", 
-                rating: "9.5", 
-                genre: "Sci-Fi", 
-                type: "series", 
-                desc: "El enfrentamiento final en Hawkins para cerrar las puertas del Mundo del Revés de manera definitiva.", 
-                img: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400", 
-                isTop10: true, 
-                topRank: 2, 
-                seasons: { 
-                    "Temporada 1": [ 
-                        { chapter: 1, title: "La Desaparición de Will Byers", duration: "48m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-                        { chapter: 2, title: "La Chica de la Calle Maple", duration: "55m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-                        { chapter: 3, title: "Luces Navideñas", duration: "51m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-                        { chapter: 4, title: "El Cuerpo", duration: "50m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
-                    ],
-                    "Temporada 2": [
-                        { chapter: 1, title: "MadMax", duration: "48m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-                        { chapter: 2, title: "Truco o Trato, Bicho raro", duration: "55m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
-                    ],
-                    "Temporada Final": [
-                        { chapter: 1, title: "El Regreso a Hawkins", duration: "1h 15m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-                        { chapter: 2, title: "La Desaparición de Vecna", duration: "1h 22m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
-                    ]
-                } 
-            },
-            { id: 103, title: "Gladiador II", year: 2024, duration: "2h 30m", rating: "8.8", genre: "Drama / Acción", type: "movie", desc: "Años después, el destino de Roma descansa sobre los hombros de un nuevo guerrero.", img: "https://images.unsplash.com/photo-1578894381163-e72c17f2d45f?q=80&w=400", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", isTop10: true, topRank: 3 },
-            { id: 104, title: "Batman: Parte II", year: 2026, duration: "2h 42m", rating: "9.1", genre: "Acción", type: "movie", desc: "El caballero de la noche se sumerge más profundo en la corrupción oculta de Gotham.", img: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=400", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", isTop10: true, topRank: 4 },
-
-            // FILAS ESTÁNDAR Y SERIES SECUNDARIAS COMPLETAS
-            { id: 1, title: "Caramelo", year: 2025, duration: "1h 40m", rating: "8.7", genre: "Comedia", type: "movie", desc: "Una divertida e ingeniosa aventura familiar llena de risas.", img: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=400", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-            { id: 2, title: "Misión Rescate", year: 2025, duration: "2h 12m", rating: "8.5", genre: "Acción", type: "movie", desc: "Operaciones tácticas secretas internacionales en territorio hostil.", img: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=400", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-            { id: 4, title: "Gravedad Cero", year: 2025, duration: "2h 02m", rating: "8.9", genre: "Sci-Fi", type: "movie", desc: "Astronautas atrapados en una estación espacial rota buscan regresar.", img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=400", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-            { id: 5, title: "El Bosque Maldito", year: 2024, duration: "1h 35m", rating: "7.4", genre: "Terror", type: "movie", desc: "Un grupo de campistas despierta a una criatura ancestral.", img: "https://images.unsplash.com/photo-1505635552518-3448ff116af3?q=80&w=400", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-            { 
-                id: 14, 
-                title: "The Last of Us", 
-                year: 2023, 
-                duration: "2 Temp.", 
-                rating: "9.2", 
-                genre: "Drama / Acción", 
-                type: "series", 
-                desc: "Supervivencia crítica postapocalíptica planetaria a través de peligrosas zonas infectadas por el hongo Cordyceps.", 
-                img: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=400", 
-                seasons: { 
-                    "Temporada 1": [ 
-                        { chapter: 1, title: "Cuando te pierdas en la oscuridad", duration: "1h 21m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-                        { chapter: 2, title: "Infectados", duration: "52m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-                        { chapter: 3, title: "Mucho, mucho tiempo", duration: "1h 15m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
-                    ],
-                    "Temporada 2": [
-                        { chapter: 1, title: "Regreso a Jackson", duration: "58m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-                        { chapter: 2, title: "La Pista", duration: "1h 02m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
-                    ]
-                } 
-            },
-            { 
-                id: 15, 
-                title: "Cyberpunk 2099", 
-                year: 2026, 
-                duration: "2 Temp.", 
-                rating: "8.9", 
-                genre: "Sci-Fi", 
-                type: "series", 
-                desc: "Un joven rebelde busca desmantelar una megacorporación tecnológica corrupta en una metrópolis futurista implacable.", 
-                img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400", 
-                seasons: { 
-                    "Temporada 1": [ 
-                        { chapter: 1, title: "Calles de Neón", duration: "48m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-                        { chapter: 2, title: "Ciberpsicosis", duration: "44m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-                        { chapter: 3, title: "Código de Red", duration: "50m", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
-                    ]
-                } 
-            }
-        ];
-
-        let favorites = JSON.parse(localStorage.getItem('stream_favs')) || [1];
-        let history = JSON.parse(localStorage.getItem('stream_history')) || [];
-        let appTheme = localStorage.getItem('stream_theme') || 'dark';
-        let appFontSize = localStorage.getItem('stream_fontsize') || 'normal';
-        let appBrandColor = localStorage.getItem('stream_brandcolor') || '#8b5cf6';
-        let appAutoplay = localStorage.getItem('stream_autoplay') !== 'false';
-
-        let heroItems = db.filter(item => item.isHero); 
-        let currentHeroIndex = 0;
-        let heroInterval = null;
-        let activeQuickFilter = null;
-        let selectedSerie = null;
-        let currentVideoToCast = ""; // Variable para guardar el stream actual de Cast
-
-        // --- SISTEMA INTERNO DE CHROMECAST SENDER ---
-        window.__onGCastApiAvailable = function(isAvailable) {
-            if (isAvailable) {
-                initializeCastApi();
-            }
-        };
-
-        function initializeCastApi() {
-            cast.framework.CastContext.getInstance().setOptions({
-                receiverApplicationId: chrome.cast.media.DEFAULT_RECEIVER_APP_ID,
-                autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
-            });
-            
-            // Evento para rastrear si el usuario empieza a transmitir
-            const context = cast.framework.CastContext.getInstance();
-            context.addEventListener(cast.framework.CastContextEventType.SESSION_STATE_CHANGED, function(event) {
-                if (event.sessionState === cast.framework.SessionState.SESSION_STARTED) {
-                    loadMediaOnChromecast();
+        // Abrir reproductor con el tráiler correspondiente al hacer click
+        playButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const videoId = button.getAttribute('data-video');
+                if(videoId) {
+                    videoPlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                    videoModal.classList.add('active');
                 }
             });
-        }
-
-        function loadMediaOnChromecast() {
-            const castSession = cast.framework.CastContext.getInstance().getCurrentSession();
-            if (!castSession || !currentVideoToCast) return;
-
-            const mediaInfo = new chrome.cast.media.MediaInfo(currentVideoToCast, 'video/mp4');
-            const request = new chrome.cast.media.LoadRequest(mediaInfo);
-            
-            castSession.loadMedia(request).then(
-                function() { console.log('Transmitiendo con éxito a Chromecast.'); },
-                function(errorCode) { console.log('Error de Cast: ' + errorCode); }
-            );
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            applySystemSettings();
-            renderAllCarousels();
-            startHeroSlider();
-
-            setTimeout(() => {
-                const splash = document.getElementById('splashScreen');
-                if(splash) splash.classList.add('fade-out');
-            }, 1800); 
         });
 
-        function applySystemSettings() {
-            document.documentElement.setAttribute('data-theme', appTheme);
-            document.getElementById('themeModeCheck').checked = (appTheme === 'light');
-            document.body.className = `font-${appFontSize}`;
-            document.getElementById('fontSizeSelect').value = appFontSize;
-            document.documentElement.style.setProperty('--accent-color', appBrandColor);
-            document.getElementById('brandColorSelect').value = appBrandColor;
-            document.getElementById('autoplayCheck').checked = appAutoplay;
-        }
+        // Cerrar reproductor y pausar video
+        const closePlayer = () => {
+            videoModal.classList.remove('active');
+            videoPlayer.src = ""; 
+        };
 
-        function startHeroSlider() {
-            buildHeroDots();
-            updateHeroView();
+        closeModal.addEventListener('click', closePlayer);
+        videoModal.addEventListener('click', (e) => {
+            if(e.target === videoModal) closePlayer();
+        });
+
+        // Buscador Dinámico en Tiempo Real
+        const searchInput = document.getElementById('movie-search');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.movie-card');
             
-            if(heroInterval) clearInterval(heroInterval);
-            heroInterval = setInterval(() => {
-                currentHeroIndex = (currentHeroIndex + 1) % heroItems.length;
-                const card = document.getElementById('heroCard');
-                if(card) card.classList.add('fade-out');
-                
-                setTimeout(() => {
-                    updateHeroView();
-                    if(card) card.classList.remove('fade-out');
-                }, 400); 
-            }, 4000); 
-        }
-
-        function updateHeroView() {
-            const current = heroItems[currentHeroIndex];
-            const card = document.getElementById('heroCard');
-            if(!card || !current) return;
-
-            card.style.backgroundImage = `linear-gradient(to top, var(--bg-black) 8%, rgba(0,0,0,0.2) 80%), url('${current.img}')`;
-            card.innerHTML = `
-                <span class="badge-movie">${current.type === 'movie' ? 'Película' : 'Serie'}</span>
-                <h1>${current.title}</h1>
-                <div class="hero-meta"><span>${current.genre}</span><span>•</span><span>${current.year}</span></div>
-            `;
-
-            document.querySelectorAll('.dot').forEach((dot, index) => {
-                if(index === currentHeroIndex) dot.classList.add('active');
-                else dot.classList.remove('active');
+            cards.forEach(card => {
+                const title = card.querySelector('h4').innerText.toLowerCase();
+                if (title.includes(query)) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
             });
-        }
+        });
 
-        function buildHeroDots() {
-            const container = document.getElementById('heroDots');
-            if(!container) return;
-            container.innerHTML = heroItems.map((_, index) => `<div class="dot ${index === 0 ? 'active' : ''}"></div>`).join('');
-        }
-
-        function triggerHeroClick() {
-            const current = heroItems[currentHeroIndex];
-            if(current) launchPlayer(current.id);
-        }
-
-        function renderAllCarousels() {
-            const top10Target = document.getElementById('scrollTop10');
-            if(top10Target) {
-                top10Target.innerHTML = db.filter(i => i.isTop10).sort((a,b) => a.topRank - b.topRank).map(item => `
-                    <div class="top10-card" onclick="launchPlayer(${item.id})">
-                        <div class="top10-number">${item.topRank}</div>
-                        <div class="top10-poster"><img src="${item.img}"></div>
-                    </div>
-                `).join('');
-            }
-            buildCarouselHtml('scrollMovies', db.filter(item => item.type === 'movie' && !item.isHero && !item.isTop10));
-            buildCarouselHtml('scrollSciFi', db.filter(item => (item.genre.includes('Sci-Fi') || item.genre.includes('Terror')) && !item.isHero && !item.isTop10));
-            buildCarouselHtml('scrollSeries', db.filter(item => item.type === 'series' && !item.isHero && !item.isTop10));
-        }
-
-        function buildCarouselHtml(elementId, items) {
-            const target = document.getElementById(elementId); if(!target) return;
-            target.innerHTML = items.map(item => {
-                const isFav = favorites.includes(item.id) ? 'is-fav' : '';
-                return `
-                    <div class="movie-poster-card">
-                        <button class="fav-toast-btn ${isFav}" onclick="event.stopPropagation(); toggleFavorite(${item.id})"><i class="ri-heart-fill"></i></button>
-                        <div class="poster-wrapper" onclick="launchPlayer(${item.id})"><img src="${item.img}"></div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function updateThemeSetting(isLight) {
-            appTheme = isLight ? 'light' : 'dark';
-            localStorage.setItem('stream_theme', appTheme);
-            document.documentElement.setAttribute('data-theme', appTheme);
-        }
-
-        function updateBrandColorSetting(colorCode) {
-            appBrandColor = colorCode;
-            localStorage.setItem('stream_brandcolor', colorCode);
-            document.documentElement.style.setProperty('--accent-color', colorCode);
-        }
-
-        function updateFontSizeSetting(sizeStr) {
-            appFontSize = sizeStr;
-            localStorage.setItem('stream_fontsize', sizeStr);
-            document.body.className = `font-${sizeStr}`;
-        }
-
-        function updateAutoplaySetting(isEnabled) {
-            appAutoplay = isEnabled;
-            localStorage.setItem('stream_autoplay', isEnabled);
-        }
-
-        function launchPlayer(id) {
-            const target = db.find(item => item.id === id); if(!target) return;
-            if(!history.includes(id)) {
-                history.unshift(id);
-                localStorage.setItem('stream_history', JSON.stringify(history));
-            }
-
-            document.getElementById('playerMovieTitle').textContent = target.title;
-            document.getElementById('playerFullTitle').textContent = target.title;
-            document.getElementById('playerDesc').textContent = target.desc;
-            document.getElementById('playerMeta').innerHTML = `<span>${target.genre}</span><span>•</span><span>${target.year}</span><span>•</span><span><i class="ri-star-fill" style="color:#ffc107"></i> ${target.rating}</span>`;
-            
-            const episodesArea = document.getElementById('episodesArea');
-            const autoplayParam = appAutoplay ? "?autoplay=1" : "?autoplay=0";
-
-            if(target.type === 'series') {
-                selectedSerie = target;
-                episodesArea.style.display = "block";
-                const dropdown = document.getElementById('seasonDropdown');
-                const seasonsAvailable = Object.keys(target.seasons);
-                dropdown.innerHTML = seasonsAvailable.map(s => `<option value="${s}">${s}</option>`).join('');
-                changeSeason(seasonsAvailable[0]);
-                
-                const firstEpisode = target.seasons[seasonsAvailable[0]][0];
-                playEpisode(firstEpisode.videoUrl + autoplayParam, firstEpisode.title, 1);
-            } else {
-                selectedSerie = null;
-                episodesArea.style.display = "none";
-                document.getElementById('videoPlayer').src = target.videoUrl + autoplayParam;
-                currentVideoToCast = target.videoUrl;
-            }
-            document.getElementById('playerModal').classList.add('open');
-        }
-
-        function changeSeason(forcedSeason = null) {
-            if(!selectedSerie) return;
-            const dropdown = document.getElementById('seasonDropdown');
-            const targetSeason = forcedSeason || dropdown.value;
-            const container = document.getElementById('episodesContainer');
-            
-            container.innerHTML = selectedSerie.seasons[targetSeason].map(ep => `
-                <div class="episode-row" id="epRow-${ep.chapter}" onclick="playEpisode('${ep.videoUrl}', '${ep.title}', ${ep.chapter})">
-                    <i class="ri-play-circle-fill"></i>
-                    <div class="episode-info">
-                        <span class="episode-title">Cap. ${ep.chapter}: ${ep.title}</span>
-                        <span class="episode-duration">${ep.duration}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function playEpisode(url, title, chapterNum) {
-            const autoplayParam = appAutoplay ? (url.includes('?') ? '&autoplay=1' : '?autoplay=1') : (url.includes('?') ? '&autoplay=0' : '?autoplay=0');
-            document.getElementById('videoPlayer').src = url + autoplayParam;
-            document.getElementById('playerMovieTitle').textContent = `Capítulo ${chapterNum}`;
-            currentVideoToCast = url;
-            document.querySelectorAll('.episode-row').forEach(row => row.classList.remove('playing'));
-            const activeRow = document.getElementById(`epRow-${chapterNum}`);
-            if(activeRow) activeRow.classList.add('playing');
-        }
-
-        function closePlayer() {
-            document.getElementById('playerModal').classList.remove('open');
-            document.getElementById('videoPlayer').src = "";
-            currentVideoToCast = "";
-            renderAllCarousels();
-        }
-
-        function toggleFavorite(id) {
-            favorites = favorites.includes(id) ? favorites.filter(f => f !== id) : [...favorites, id];
-            localStorage.setItem('stream_favs', JSON.stringify(favorites));
-            renderAllCarousels();
-            if(activeQuickFilter === 'favs') updateQuickFilterView();
-        }
-
-        function toggleQuickFilter(type) {
-            if (activeQuickFilter === type) { activeQuickFilter = null; goHome(); } 
-            else {
-                activeQuickFilter = type;
-                document.getElementById('homePage').classList.remove('active-view');
-                document.getElementById('settingsPage').classList.remove('active-view');
-                document.getElementById('explorePage').classList.add('active-view');
-                updateQuickFilterView();
-            }
-        }
-
-        function updateQuickFilterView() {
-            if (activeQuickFilter === 'favs') displayGridData(db.filter(item => favorites.includes(item.id)), "Mis Favoritos");
-            else if (activeQuickFilter === 'history') displayGridData(history.map(id => db.find(i => i.id === id)).filter(Boolean), "Mi Historial");
-        }
-
-        function perfectSearch(query) {
-            if(!query.trim()) { displayGridData(db, "Explorar Todo"); return; }
-            const clean = query.toLowerCase().trim();
-            displayGridData(db.filter(i => i.title.toLowerCase().includes(clean) || i.genre.toLowerCase().includes(clean)), `Resultados para: "${query}"`);
-        }
-
-        function displayGridData(items, title) {
-            document.getElementById('exploreTitle').textContent = title;
-            const grid = document.getElementById('exploreGrid');
-            if(items.length === 0) { grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding:40px; color: var(--text-gray);">Sin resultados.</p>`; return; }
-            grid.innerHTML = items.map(item => `<div class="movie-poster-card" onclick="launchPlayer(${item.id})"><div class="poster-wrapper"><img src="${item.img}"></div></div>`).join('');
-        }
-
-        function openSettingsPage() {
-            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active-view'));
-            document.getElementById('settingsPage').classList.add('active-view');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.getElementById('bottomNavContainer').style.display = 'flex';
-        }
-
-        function goHome() {
-            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active-view'));
-            document.getElementById('homePage').classList.add('active-view');
-            document.getElementById('navHome').classList.add('active');
-            document.getElementById('bottomNavContainer').style.display = 'flex';
-            activeQuickFilter = null;
-        }
-
-        function seeAll(type) {
-            displayGridData(db.filter(i => i.type === type), type === 'movie' ? "Películas" : "Series");
-            document.getElementById('homePage').classList.remove('active-view');
-            document.getElementById('explorePage').classList.add('active-view');
-            document.getElementById('bottomNavContainer').style.display = 'flex';
-        }
-
-        function navigate(tab) {
-            document.getElementById('searchBox').classList.remove('show');
-            if(tab === 'home') goHome();
-            else if(tab === 'movies') seeAll('movie');
-            else if(tab === 'series') seeAll('series');
-            else if(tab === 'search') {
-                document.getElementById('searchBox').classList.add('show');
-                document.getElementById('homePage').classList.remove('active-view');
-                document.getElementById('explorePage').classList.add('active-view');
-                displayGridData(db, "Explorar Todo");
-                document.getElementById('bottomNavContainer').style.display = 'none';
-            }
-        }
+        // Navegación Activa
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                navLinks.forEach(l => l.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
     </script>
 </body>
 </html>
