@@ -3,362 +3,1517 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineMax - Películas y Series en Streaming</title>
+    <title>StreamVerse Premium - Películas y Series</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
-        /* ==========================================================================
-           VARIABLES Y CONFIGURACIÓN BASE
-           ========================================================================== */
+        /* --- DISEÑO & VARIABLES (PALETA ULTRA PREMIUM) --- */
         :root {
-            --bg-color: #0f1014;
-            --card-bg: #1a1c23;
-            --accent-color: #e50914; /* Rojo cinematográfico */
-            --text-color: #ffffff;
-            --text-secondary: #9ca3af;
-            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --bg-main: #0a0a0c;
+            --bg-card: #121216;
+            --bg-card-hover: #1a1a22;
+            --accent-primary: #e50914; /* Rojo vibrante */
+            --accent-gradient: linear-gradient(135deg, #e50914 0%, #ff3b30 100%);
+            --text-main: #ffffff;
+            --text-secondary: #a1a1aa;
+            --glow-color: rgba(229, 9, 20, 0.4);
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        /* --- RESET --- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-main);
-            overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ==========================================================================
-           HEADER / NAVEGACIÓN
-           ========================================================================== */
-        header {
-            position: sticky;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            background-color: rgba(15, 16, 20, 0.98);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-            padding: 15px 0;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
         }
 
-        .header-container {
-            max-width: 1400px;
-            margin: 0 auto;
+        /* --- SCROLLBAR PERSONALIZADO --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary);
+        }
+
+        /* --- CABECERA INTELIGENTE (STICKY CON BLUR EFFECT) --- */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 40px;
+            padding: 20px 6%;
+            background: rgba(10, 10, 12, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 1000;
+            transition: var(--transition-smooth);
+        }
+
+        .header.scrolled {
+            padding: 12px 6%;
+            background: rgba(10, 10, 12, 0.95);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .logo {
-            font-size: 28px;
+            font-size: 1.8rem;
             font-weight: 800;
-            letter-spacing: 1px;
+            letter-spacing: -0.5px;
             cursor: pointer;
+            text-decoration: none;
+            color: var(--text-main);
         }
 
         .logo span {
-            color: var(--accent-color);
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Enlaces de Navegación */
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
         }
 
         .nav-links a {
             color: var(--text-secondary);
             text-decoration: none;
-            margin: 0 15px;
-            font-weight: 500;
-            transition: color 0.3s;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: var(--accent-gradient);
+            transition: var(--transition-smooth);
+            border-radius: 2px;
         }
 
         .nav-links a:hover, .nav-links a.active {
-            color: var(--text-color);
+            color: var(--text-main);
         }
 
-        /* Buscador */
-        .search-box {
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* Grupo de Acciones en Cabecera */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Buscador Expandible de Alta Gama */
+        .search-bar {
             position: relative;
             display: flex;
             align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 8px 18px;
+            width: 280px;
+            transition: var(--transition-smooth);
         }
 
-        .search-box input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid transparent;
-            padding: 8px 15px;
-            padding-right: 35px;
-            border-radius: 20px;
-            color: white;
+        .search-bar:focus-within {
+            width: 340px;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 15px var(--glow-color);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .search-bar input {
+            background: none;
+            border: none;
             outline: none;
-            transition: all 0.3s ease;
-            width: 220px;
-        }
-
-        .search-box input:focus {
-            width: 300px;
-            background: rgba(255, 255, 255, 0.15);
-            border-color: var(--accent-color);
-        }
-
-        .search-box i {
-            position: absolute;
-            right: 15px;
-            color: var(--text-secondary);
-            pointer-events: none;
-        }
-
-        /* ==========================================================================
-           CONTENIDO Y TARJETAS (GRID)
-           ========================================================================== */
-        .content-container {
-            max-width: 1400px;
-            margin: 40px auto 0 auto;
-            position: relative;
-            z-index: 10;
-            padding: 0 40px;
-        }
-
-        .movie-section {
-            margin-bottom: 50px;
-        }
-
-        .section-title {
-            font-size: 24px;
-            margin-bottom: 22px;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
-
-        .movies-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .movie-card {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s;
-            aspect-ratio: 16/10;
-        }
-
-        .movie-card img {
+            color: var(--text-main);
+            font-size: 0.9rem;
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            background-color: #2a2d37;
-            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            margin-right: 10px;
         }
 
-        .card-overlay {
+        .search-bar input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-bar svg {
+            fill: var(--text-secondary);
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .search-bar:focus-within svg {
+            fill: var(--accent-primary);
+        }
+
+        /* Botón de Perfil / Favoritos */
+        .user-favorites-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition-smooth);
+        }
+
+        .user-favorites-btn:hover {
+            background: var(--accent-gradient);
+            border-color: transparent;
+            transform: scale(1.05);
+        }
+
+        .user-favorites-btn svg {
+            fill: var(--text-main);
+            width: 20px;
+            height: 20px;
+        }
+
+        .fav-badge {
             position: absolute;
-            bottom: 0;
+            top: -2px;
+            right: -2px;
+            background: #ffc107;
+            color: #000;
+            font-size: 0.7rem;
+            font-weight: 800;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--bg-main);
+        }
+
+        /* Hamburguesa Móvil */
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .mobile-menu-btn span {
+            display: block;
+            width: 25px;
+            height: 2.5px;
+            background-color: var(--text-main);
+            border-radius: 4px;
+            transition: var(--transition-smooth);
+        }
+
+        /* --- SECCIÓN HERO DINÁMICA (CINEMATOGRÁFICA) --- */
+        .hero-carousel {
+            position: relative;
+            width: 100%;
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            padding: 0 6%;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            padding: 20px;
-            background: linear-gradient(to top, rgba(15, 16, 20, 0.95) 20%, rgba(15, 16, 20, 0.4) 60%, transparent 100%);
+            object-fit: cover;
+            z-index: -1;
+            filter: brightness(0.45);
+            transform: scale(1.03);
+            transition: var(--transition-smooth);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, var(--bg-main) 5%, rgba(10, 10, 12, 0.4) 60%, rgba(10, 10, 12, 0.8) 100%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 650px;
+            z-index: 10;
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .hero-tag {
+            background: rgba(229, 9, 20, 0.2);
+            border: 1px solid var(--accent-primary);
+            color: #ff3b30;
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 15px;
+            letter-spacing: -1.5px;
+        }
+
+        .hero-meta {
             display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
         }
 
-        /* Efectos Hover */
-        .movie-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(229, 9, 20, 0.25);
-        }
-
-        .movie-card:hover img {
-            transform: scale(1.08);
-        }
-
-        .movie-card:hover .card-overlay {
-            opacity: 1;
-        }
-
-        .card-overlay h4 {
-            font-size: 18px;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-
-        .rating {
-            color: #ffc107;
-            font-size: 14px;
-            font-weight: 600;
+        .hero-meta span {
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
-        /* ==========================================================================
-           FOOTER
-           ========================================================================== */
-        footer {
-            text-align: center;
-            padding: 50px 0;
+        .rating-star {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .hero-desc {
+            font-size: 1.1rem;
+            color: #d4d4d8;
+            margin-bottom: 35px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px var(--glow-color);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(229, 9, 20, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* --- FILTROS DE CATEGORÍA --- */
+        .filter-section {
+            padding: 40px 6% 10px 6%;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: var(--text-secondary);
-            font-size: 14px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            margin-top: 60px;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .filter-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .filter-btn.active {
+            background: var(--text-main);
+            color: var(--bg-main);
+            border-color: var(--text-main);
+        }
+
+        /* --- CONTENEDOR PRINCIPAL / GRID --- */
+        .main-container {
+            padding: 20px 6% 80px 6%;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 30px;
+        }
+
+        /* TARJETA INTERACTIVA DE ALTA GAMA */
+        .content-card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+            background-color: var(--bg-card-hover);
+        }
+
+        .card-img-wrapper {
+            width: 100%;
+            height: 350px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-smooth);
+        }
+
+        .content-card:hover .card-img-wrapper img {
+            transform: scale(1.08);
+        }
+
+        /* Badge de Tipo (Película/Serie) */
+        .type-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            backdrop-filter: blur(10px);
+            z-index: 5;
+        }
+
+        .type-badge.movie {
+            background: rgba(229, 9, 20, 0.85);
+            color: #fff;
+        }
+
+        .type-badge.series {
+            background: rgba(30, 144, 255, 0.85);
+            color: #fff;
+        }
+
+        /* Botón Guardar en Favoritos (Estrella interactiva) */
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(10, 10, 12, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            z-index: 5;
+            transition: var(--transition-smooth);
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.15);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .favorite-btn svg {
+            fill: rgba(255,255,255,0.8);
+            width: 16px;
+            height: 16px;
+            transition: var(--transition-smooth);
+        }
+
+        .favorite-btn.active svg {
+            fill: #ffc107;
+        }
+
+        .favorite-btn:hover svg {
+            fill: #ffc107;
+        }
+
+        /* Info de Tarjeta */
+        .card-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .card-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 700;
+            color: #ffc107;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            transition: var(--transition-smooth);
+        }
+
+        .content-card:hover .card-title {
+            color: var(--accent-primary);
+        }
+
+        .card-genres {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* --- VENTANA MODAL PARA REPRODUCCIÓN PREMIUM --- */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(6, 6, 8, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition-smooth);
+            padding: 20px;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-container {
+            background: var(--bg-card);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 900px;
+            border: 1px solid rgba(255,255,255,0.08);
+            overflow: hidden;
+            position: relative;
+            transform: scale(0.9);
+            transition: var(--transition-smooth);
+        }
+
+        .modal.active .modal-container {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: var(--accent-primary);
+            transform: rotate(90deg);
+        }
+
+        /* Video / Reproductor Simulado */
+        .player-wrapper {
+            position: relative;
+            padding-top: 56.25%; /* Relación de aspecto 16:9 */
+            background: #000;
+        }
+
+        .player-wrapper .simulated-player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Reproductor simulado estilizado */
+        .simulated-player {
+            background: linear-gradient(135deg, #1e1e24 0%, #0a0a0c 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .play-icon-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px var(--glow-color);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .play-icon-large:hover {
+            transform: scale(1.1);
+        }
+
+        .play-icon-large svg {
+            fill: white;
+            width: 32px;
+            height: 32px;
+            margin-left: 5px;
+        }
+
+        .modal-details {
+            padding: 30px;
+        }
+
+        .modal-details-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .modal-details-meta {
+            display: flex;
+            gap: 15px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .modal-details-desc {
+            color: #d4d4d8;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* --- PANEL DE FAVORITOS LATERAL (SIDEBAR) --- */
+        .fav-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100%;
+            background: var(--bg-card);
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 1500;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+            transition: var(--transition-smooth);
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fav-sidebar.active {
+            right: 0;
+        }
+
+        .fav-sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .fav-sidebar-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .fav-sidebar-close:hover {
+            color: var(--accent-primary);
+        }
+
+        .fav-items-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .fav-item {
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px;
+            border-radius: 12px;
+            align-items: center;
+            position: relative;
+        }
+
+        .fav-item img {
+            width: 70px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .fav-item-info {
+            flex-grow: 1;
+        }
+
+        .fav-item-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .fav-item-meta {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .fav-item-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fav-item-remove svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* --- NOTIFICACIONES --- */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #16a34a;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            z-index: 3000;
+            font-weight: 700;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .toast.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* --- FOOTER HIGH-END --- */
+        .footer {
+            background: #060608;
+            padding: 60px 6% 30px 6%;
+            border-top: 1px solid rgba(255,255,255,0.03);
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .footer-logo span {
+            color: var(--accent-primary);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-primary);
+        }
+
+        .footer-copy {
+            font-size: 0.85rem;
+            color: #4b5563;
+        }
+
+        /* --- ANIMACIONES --- */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* ==========================================================================
-           RESPONSIVE DESIGN (MÓVILES Y TABLETS)
+           DISEÑO RESPONSIVE EXTREMO (SÚPER FLUIDO)
            ========================================================================== */
+
+        /* Tablets grandes */
+        @media (max-width: 1024px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+            .grid-cards {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        /* Tablets y móviles medianos */
         @media (max-width: 768px) {
-            .header-container { flex-direction: column; gap: 15px; padding: 15px 20px; }
-            .content-container { margin-top: 20px; padding: 0 20px; }
-            .movies-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
-            .search-box input { width: 100%; }
+            .header {
+                padding: 15px 5%;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            /* Navegación Móvil Estilo Panel */
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 75%;
+                height: 100vh;
+                background: rgba(10, 10, 12, 0.98);
+                backdrop-filter: blur(25px);
+                flex-direction: column;
+                justify-content: center;
+                gap: 30px;
+                padding: 40px;
+                transition: var(--transition-smooth);
+                box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+                z-index: 999;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .nav-links a {
+                font-size: 1.3rem;
+            }
+
+            .hero-carousel {
+                height: 70vh;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-desc {
+                font-size: 0.95rem;
+                margin-bottom: 25px;
+            }
+
+            .btn-primary, .btn-secondary {
+                padding: 12px 24px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Móviles compactos */
+        @media (max-width: 480px) {
+            .header {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+                order: 3;
+            }
+
+            .search-bar {
+                width: 80%;
+                padding: 6px 14px;
+            }
+
+            .search-bar:focus-within {
+                width: 82%;
+            }
+
+            .hero-carousel {
+                height: 60vh;
+                padding-top: 100px;
+            }
+
+            .hero-tag {
+                font-size: 0.7rem;
+                padding: 4px 10px;
+            }
+
+            .hero-title {
+                font-size: 1.8rem;
+            }
+
+            .hero-meta {
+                font-size: 0.8rem;
+                gap: 10px;
+            }
+
+            .hero-desc {
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                margin-bottom: 20px;
+            }
+
+            .grid-cards {
+                grid-template-columns: repeat(2, 1fr); /* Forzamos 2 hermosas columnas */
+                gap: 15px;
+            }
+
+            .card-img-wrapper {
+                height: 220px;
+            }
+
+            .card-title {
+                font-size: 0.9rem;
+            }
+
+            .card-meta {
+                font-size: 0.75rem;
+            }
+
+            .card-body {
+                padding: 12px;
+            }
+
+            .filter-section {
+                padding: 20px 6% 0 6%;
+                overflow-x: auto;
+                white-space: nowrap;
+                flex-wrap: nowrap;
+            }
+            
+            .filter-section::-webkit-scrollbar {
+                display: none;
+            }
+
+            .filter-btn {
+                padding: 8px 18px;
+                font-size: 0.8rem;
+            }
+
+            .fav-sidebar {
+                width: 100%;
+                right: -100%;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header id="main-header">
-        <div class="header-container">
-            <h1 class="logo" onclick="window.location.reload()">Cine<span>Max</span></h1>
-            <nav class="nav-links">
-                <a href="#" class="active">Inicio</a>
-                <a href="#">Películas</a>
-                <a href="#">Series</a>
-                <a href="#">Mi Lista</a>
-            </nav>
-            <div class="search-box">
-                <input type="text" id="movie-search" placeholder="Buscar películas o series...">
-                <i class="fas fa-search"></i>
+    <div id="system-toast" class="toast">¡Agregado con éxito!</div>
+
+    <header class="header" id="main-header">
+        <a href="#" class="logo" onclick="window.location.reload()">Stream<span>Verse</span></a>
+        
+        <nav class="nav-links" id="nav-links">
+            <a href="#" class="active" onclick="filterCategory('todos', this)">Inicio</a>
+            <a href="#" onclick="filterCategory('pelicula', this)">Películas</a>
+            <a href="#" onclick="filterCategory('serie', this)">Series</a>
+            <a href="#" onclick="showFavoritesSidebar()">Mi Lista</a>
+        </nav>
+
+        <div class="header-actions">
+            <div class="search-bar">
+                <input type="text" id="app-search" placeholder="Buscar por título, género..." oninput="handleSearch(this.value)">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             </div>
+
+            <div class="user-favorites-btn" onclick="showFavoritesSidebar()" title="Ver Favoritos">
+                <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <div class="fav-badge" id="fav-badge">0</div>
+            </div>
+
+            <button class="mobile-menu-btn" id="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
-    <main class="content-container">
-        
-        <section class="movie-section">
-            <h3 class="section-title">Películas en Tendencia</h3>
-            <div class="movies-grid">
-                <div class="movie-card play-btn" data-video="YoHD9XEInc0">
-                    <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&auto=format&fit=crop" alt="Origen">
-                    <div class="card-overlay">
-                        <h4>Origen (Inception)</h4>
-                        <span class="rating"><i class="fas fa-star"></i> 8.8</span>
-                    </div>
-                </div>
-                <div class="movie-card play-btn" data-video="EXeTwQWrcwY">
-                    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=400&auto=format&fit=crop" alt="Batman">
-                    <div class="card-overlay">
-                        <h4>Batman: El Caballero de la Noche</h4>
-                        <span class="rating"><i class="fas fa-star"></i> 9.0</span>
-                    </div>
-                </div>
-                <div class="movie-card play-btn" data-video="gCcx85y54qc">
-                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=400&auto=format&fit=crop" alt="Blade Runner">
-                    <div class="card-overlay">
-                        <h4>Blade Runner 2049</h4>
-                        <span class="rating"><i class="fas fa-star"></i> 8.0</span>
-                    </div>
-                </div>
-                <div class="movie-card play-btn" data-video="N_gD9-Oa0fg">
-                    <img src="https://images.unsplash.com/photo-1478720143033-6a972678da30?q=80&w=400&auto=format&fit=crop" alt="Sin tiempo para morir">
-                    <div class="card-overlay">
-                        <h4>Sin Tiempo para Morir</h4>
-                        <span class="rating"><i class="fas fa-star"></i> 7.3</span>
-                    </div>
-                </div>
+    <section class="hero-carousel" id="hero-banner">
+        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80" alt="Banner Destacado" class="hero-bg" id="hero-img">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <span class="hero-tag" id="hero-badge">Estreno Exclusivo</span>
+            <h2 class="hero-title" id="hero-title">Interestelar</h2>
+            <div class="hero-meta">
+                <span class="rating-star">★ <span id="hero-rating">8.6</span></span>
+                <span>•</span>
+                <span id="hero-year">2014</span>
+                <span>•</span>
+                <span id="hero-genre">Ciencia Ficción</span>
             </div>
-        </section>
-
-        <section class="movie-section">
-            <h3 class="section-title">Series Populares</h3>
-            <div class="movies-grid">
-                <div class="movie-card play-btn" data-video="b9EkMc79ZSU">
-                    <img src="https://images.unsplash.com/photo-1574375927938-d5a98e8edd86?q=80&w=400&auto=format&fit=crop" alt="Stranger Things">
-                    <div class="card-overlay">
-                        <h4>Stranger Things</h4>
-                        <span class="rating"><i class="fas fa-star"></i> 8.7</span>
-                    </div>
-                </div>
-                <div class="movie-card play-btn" data-video="HhesaQUpPyU">
-                    <img src="https://images.unsplash.com/photo-1616530940355-351fabd9524b?q=80&w=400&auto=format&fit=crop" alt="Breaking Bad">
-                    <div class="card-overlay">
-                        <h4>Breaking Bad</h4>
-                        <span class="rating"><i class="fas fa-star"></i> 9.5</span>
-                    </div>
-                </div>
-                <div class="movie-card play-btn" data-video="rrwycJ08ESA">
-                    <img src="https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=400&auto=format&fit=crop" alt="Dark">
-                    <div class="card-overlay">
-                        <h4>Dark</h4>
-                        <span class="rating"><i class="fas fa-star"></i> 8.8</span>
-                    </div>
-                </div>
-                <div class="movie-card play-btn" data-video="aOC8E8z_ifw">
-                    <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400&auto=format&fit=crop" alt="The Mandalorian">
-                    <div class="card-overlay">
-                        <h4>The Mandalorian</h4>
-                        <span class="rating"><i class="fas fa-star"></i> 8.7</span>
-                    </div>
-                </div>
+            <p class="hero-desc" id="hero-description">Un equipo de exploradores viaja a través de un agujero de gusano en el espacio en un intento por asegurar la supervivencia de la humanidad en una Tierra agonizante.</p>
+            <div class="hero-actions">
+                <button class="btn-primary" onclick="openActiveHeroPlayer()">
+                    <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Reproducir Ahora
+                </button>
+                <button class="btn-secondary" onclick="addToFavoritesFromHero()">
+                    + Agregar a Lista
+                </button>
             </div>
-        </section>
+        </div>
+    </section>
 
+    <div class="filter-section">
+        <button class="filter-btn active" onclick="filterGenre('todos', this)">Todos</button>
+        <button class="filter-btn" onclick="filterGenre('Acción', this)">Acción</button>
+        <button class="filter-btn" onclick="filterGenre('Ciencia Ficción', this)">Ciencia Ficción</button>
+        <button class="filter-btn" onclick="filterGenre('Drama', this)">Drama</button>
+        <button class="filter-btn" onclick="filterGenre('Suspenso', this)">Suspenso</button>
+        <button class="filter-btn" onclick="filterGenre('Fantasía', this)">Fantasía</button>
+    </div>
+
+    <main class="main-container">
+        <div class="section-header">
+            <h3 class="section-title" id="grid-header-title">Tendencias y Recomendados</h3>
+        </div>
+
+        <div class="grid-cards" id="media-grid">
+            </div>
     </main>
 
-    <footer>
-        <p>&copy; 2026 CineMax. Diseñado con pasión para los amantes del cine y la televisión.</p>
+    <div class="fav-sidebar" id="fav-sidebar">
+        <div class="fav-sidebar-header">
+            <h3 style="font-weight: 800; font-size: 1.5rem;">Mi Lista</h3>
+            <button class="fav-sidebar-close" onclick="closeFavoritesSidebar()">✕</button>
+        </div>
+        <div class="fav-items-list" id="fav-items-list">
+            </div>
+    </div>
+
+    <div class="modal" id="video-modal">
+        <div class="modal-container">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="player-wrapper">
+                <div class="simulated-player">
+                    <div class="play-icon-large" onclick="alert('Iniciando Stream de alta velocidad en 4K UHD...')">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 10px;">Reproduciendo en Ultra HD 4K</h3>
+                    <p style="color: var(--text-secondary); max-width: 400px;">Servidores dedicados de alta velocidad activos. Conexión segura habilitada.</p>
+                </div>
+            </div>
+            <div class="modal-details">
+                <h3 class="modal-details-title" id="modal-title">Título del Video</h3>
+                <div class="modal-details-meta">
+                    <span id="modal-rating" style="color:#ffc107; font-weight:700">★ 0.0</span>
+                    <span id="modal-type">Película</span>
+                    <span id="modal-year">2026</span>
+                </div>
+                <p class="modal-details-desc" id="modal-description">Descripción detallada.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-logo">Stream<span>Verse</span></div>
+        <div class="footer-links">
+            <a href="#">Términos de Uso</a>
+            <a href="#">Declaración de Privacidad</a>
+            <a href="#">Centro de Ayuda</a>
+            <a href="#">Soporte Técnico</a>
+        </div>
+        <div class="footer-copy">
+            &copy; 2026 StreamVerse Inc. Diseñado para ofrecer la mejor experiencia cinematográfica interactiva en móvil y escritorio.
+        </div>
     </footer>
 
     <script>
-        // REDIRECCIÓN DIRECTA A YOUTUBE (Evita bloqueos de Sandbox)
-        const playButtons = document.querySelectorAll('.play-btn');
+        // BASE DE DATOS DE CONTENIDO PREMIUM INTEGRADA
+        const mediaDatabase = [
+            {
+                id: 1,
+                title: "Interestelar",
+                type: "pelicula",
+                genre: "Ciencia Ficción",
+                year: 2014,
+                rating: 8.6,
+                image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=600&auto=format&fit=crop&q=80",
+                description: "Un equipo de exploradores viaja a través de un agujero de gusano en el espacio en un intento por asegurar la supervivencia de la humanidad en una Tierra agonizante.",
+                banner: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80"
+            },
+            {
+                id: 2,
+                title: "Dark",
+                type: "serie",
+                genre: "Suspenso",
+                year: 2017,
+                rating: 8.8,
+                image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop&q=80",
+                description: "Una saga familiar con un giro sobrenatural se sitúa en un pueblo alemán, donde la desaparición de dos niños deja al descubierto las dobles vidas y las relaciones rotas entre cuatro familias.",
+                banner: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1600&auto=format&fit=crop&q=80"
+            },
+            {
+                id: 3,
+                title: "Inception (El Origen)",
+                type: "pelicula",
+                genre: "Acción",
+                year: 2010,
+                rating: 8.8,
+                image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&auto=format&fit=crop&q=80",
+                description: "Un ladrón que roba secretos corporativos a través del uso de la tecnología de compartir sueños, recibe la tarea inversa de plantar una idea en la mente de un jefe de corporación.",
+                banner: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1600&auto=format&fit=crop&q=80"
+            },
+            {
+                id: 4,
+                title: "The Last of Us",
+                type: "serie",
+                genre: "Drama",
+                year: 2023,
+                rating: 8.9,
+                image: "https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=600&auto=format&fit=crop&q=80",
+                description: "Después de que una pandemia global destruye la civilización, un sobreviviente endurecido se hace cargo de una niña de 14 años que puede ser la última esperanza de la humanidad.",
+                banner: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=1600&auto=format&fit=crop&q=80"
+            },
+            {
+                id: 5,
+                title: "Duna: Parte Dos",
+                type: "pelicula",
+                genre: "Ciencia Ficción",
+                year: 2024,
+                rating: 9.0,
+                image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop&q=80",
+                description: "Paul Atreides se une a Chani y a los Fremen mientras busca venganza contra los conspiradores que destruyeron a su familia, enfrentándose a una elección entre el amor de su vida y el destino del universo.",
+                banner: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                id: 6,
+                title: "Stranger Things",
+                type: "serie",
+                genre: "Fantasía",
+                year: 2016,
+                rating: 8.7,
+                image: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?w=600&auto=format&fit=crop&q=80",
+                description: "Cuando un niño desaparece, un pueblo desvela un misterio que tiene que ver con experimentos secretos, fuerzas sobrenaturales terroríficas y una niña muy extraña.",
+                banner: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?w=600&auto=format&fit=crop&q=80"
+            }
+        ];
 
-        playButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const videoId = button.getAttribute('data-video');
-                if(videoId) {
-                    // Abre el video directamente de forma segura
-                    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
-                }
-            });
-        });
+        let favorites = JSON.parse(localStorage.getItem('streamverse_favs')) || [];
+        let currentCategory = 'todos';
+        let currentGenre = 'todos';
+        let currentSearchQuery = '';
+        let currentHeroMediaId = 1;
 
-        // Buscador Dinámico en Tiempo Real
-        const searchInput = document.getElementById('movie-search');
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('.movie-card');
+        // ELEMENTOS DOM
+        const mediaGrid = document.getElementById('media-grid');
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+        const mainHeader = document.getElementById('main-header');
+        const favSidebar = document.getElementById('fav-sidebar');
+        const favItemsList = document.getElementById('fav-items-list');
+        const favBadge = document.getElementById('fav-badge');
+        const systemToast = document.getElementById('system-toast');
+        const videoModal = document.getElementById('video-modal');
+
+        // INICIALIZACIÓN
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMediaGrid();
+            updateFavBadge();
+            setupHeroBanner(1); // Carga Interestelar por defecto
             
-            cards.forEach(card => {
-                const title = card.querySelector('h4').innerText.toLowerCase();
-                if (title.includes(query)) {
-                    card.style.display = "block";
+            // Efecto scroll en cabecera
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    mainHeader.classList.add('scrolled');
                 } else {
-                    card.style.display = "none";
+                    mainHeader.classList.remove('scrolled');
+                }
+            });
+
+            // Menú móvil hamburguesa interactivo
+            mobileMenuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                mobileMenuToggle.classList.toggle('active');
+                const spans = mobileMenuToggle.querySelectorAll('span');
+                if (navLinks.classList.contains('active')) {
+                    spans[0].style.transform = 'rotate(45deg) translate(6px, 6px)';
+                    spans[1].style.opacity = '0';
+                    spans[2].style.transform = 'rotate(-45deg) translate(6px, -6px)';
+                } else {
+                    spans[0].style.transform = 'none';
+                    spans[1].style.opacity = '1';
+                    spans[2].style.transform = 'none';
                 }
             });
         });
 
-        // Navegación Activa
-        const navLinks = document.querySelectorAll('.nav-links a');
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                navLinks.forEach(l => l.classList.remove('active'));
-                e.target.classList.add('active');
+        // ACTUALIZAR EL HÉROE BANNER PRINCIPAL DINÁMICAMENTE
+        function setupHeroBanner(id) {
+            const media = mediaDatabase.find(item => item.id === id);
+            if (!media) return;
+
+            currentHeroMediaId = id;
+            document.getElementById('hero-img').src = media.banner;
+            document.getElementById('hero-title').textContent = media.title;
+            document.getElementById('hero-rating').textContent = media.rating;
+            document.getElementById('hero-year').textContent = media.year;
+            document.getElementById('hero-genre').textContent = media.genre;
+            document.getElementById('hero-description').textContent = media.description;
+            document.getElementById('hero-badge').textContent = media.type === 'pelicula' ? 'Película Destacada' : 'Serie Destacada';
+        }
+
+        // RENDERIZADOR AVANZADO DE TARJETAS
+        function renderMediaGrid() {
+            mediaGrid.innerHTML = '';
+            
+            // Filtrado múltiple en tiempo real
+            const filtered = mediaDatabase.filter(item => {
+                const matchesCategory = currentCategory === 'todos' || item.type === currentCategory;
+                const matchesGenre = currentGenre === 'todos' || item.genre === currentGenre;
+                const matchesSearch = item.title.toLowerCase().includes(currentSearchQuery.toLowerCase()) || 
+                                      item.genre.toLowerCase().includes(currentSearchQuery.toLowerCase());
+                return matchesCategory && matchesGenre && matchesSearch;
             });
-        });
+
+            if (filtered.length === 0) {
+                mediaGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 50px 0; color: var(--text-secondary);">
+                        <svg style="width: 60px; height: 60px; fill: var(--text-secondary); margin-bottom: 15px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        <h3>No encontramos resultados para tu búsqueda</h3>
+                        <p style="margin-top: 5px;">Prueba seleccionando otro filtro o palabra clave.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const isFav = favorites.includes(item.id);
+                const card = document.createElement('div');
+                card.className = 'content-card';
+                card.innerHTML = `
+                    <div class="card-img-wrapper" onclick="openPlayer(${item.id})">
+                        <span class="type-badge ${item.type}">${item.type === 'pelicula' ? 'Película' : 'Serie'}</span>
+                        <img src="${item.image}" alt="${item.title}" loading="lazy">
+                    </div>
+                    <button class="favorite-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(${item.id}, event)" title="Añadir a mi lista">
+                        <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    </button>
+                    <div class="card-body" onclick="openPlayer(${item.id})">
+                        <div class="card-meta">
+                            <span>${item.year}</span>
+                            <span class="card-rating">★ ${item.rating}</span>
+                        </div>
+                        <h4 class="card-title">${item.title}</h4>
+                        <span class="card-genres">${item.genre}</span>
+                    </div>
+                `;
+                mediaGrid.appendChild(card);
+            });
+        }
+
+        // CONTROLADORES DE FILTROS Y BÚSQUEDA
+        function filterCategory(category, element) {
+            currentCategory = category;
+            
+            // Actualizar clase activa en cabecera
+            const links = navLinks.querySelectorAll('a');
+            links.forEach(link => link.classList.remove('active'));
+            if (element) {
+                element.classList.add('active');
+            }
+            
+            // Cerrar menú móvil al seleccionar filtro
+            navLinks.classList.remove('active');
+            const spans = mobileMenuToggle.querySelectorAll('span');
+            spans[0].style.transform = 'none';
+            spans[1].style.opacity = '1';
+            spans[2].style.transform = 'none';
+
+            document.getElementById('grid-header-title').textContent = 
+                category === 'todos' ? 'Tendencias y Recomendados' : category === 'pelicula' ? 'Películas Exclusivas' : 'Series de Estreno';
+
+            renderMediaGrid();
+        }
+
+        function filterGenre(genre, element) {
+            currentGenre = genre;
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            renderMediaGrid();
+        }
+
+        function handleSearch(val) {
+            currentSearchQuery = val;
+            renderMediaGrid();
+        }
+
+        // GESTIÓN DE FAVORITOS (LOCALSTORAGE AUTOMÁTICO)
+        function toggleFavorite(id, event) {
+            if (event) event.stopPropagation(); // Evitar abrir el player al dar click a favoritos
+
+            const index = favorites.indexOf(id);
+            const media = mediaDatabase.find(m => m.id === id);
+
+            if (index > -1) {
+                favorites.splice(index, 1);
+                showToast(`Eliminado de Mi Lista`, '#ef4444');
+            } else {
+                favorites.push(id);
+                showToast(`¡Añadido a Mi Lista!`, '#16a34a');
+            }
+
+            localStorage.setItem('streamverse_favs', JSON.stringify(favorites));
+            updateFavBadge();
+            renderMediaGrid();
+            renderFavoritesSidebar();
+        }
+
+        function addToFavoritesFromHero() {
+            if (!favorites.includes(currentHeroMediaId)) {
+                toggleFavorite(currentHeroMediaId);
+            } else {
+                showToast('Ya está en tu lista', '#ffc107');
+            }
+        }
+
+        function updateFavBadge() {
+            if (favorites.length > 0) {
+                favBadge.textContent = favorites.length;
+                favBadge.style.display = 'flex';
+            } else {
+                favBadge.style.display = 'none';
+            }
+        }
+
+        // TOAST INTERACTIVO (MENSAJES DE ACCIÓN)
+        function showToast(message, bgColor) {
+            systemToast.textContent = message;
+            systemToast.style.background = bgColor;
+            systemToast.classList.add('active');
+            setTimeout(() => {
+                systemToast.classList.remove('active');
+            }, 2500);
+        }
+
+        // PANEL DE FAVORITOS DESPLEGABLE
+        function showFavoritesSidebar() {
+            favSidebar.classList.add('active');
+            renderFavoritesSidebar();
+        }
+
+        function closeFavoritesSidebar() {
+            favSidebar.classList.remove('active');
+        }
+
+        function renderFavoritesSidebar() {
+            favItemsList.innerHTML = '';
+            if (favorites.length === 0) {
+                favItemsList.innerHTML = `
+                    <p style="text-align: center; margin-top: 50px; color: var(--text-secondary);">Tu lista está vacía.</p>
+                `;
+                return;
+            }
+
+            favorites.forEach(id => {
+                const item = mediaDatabase.find(m => m.id === id);
+                if (item) {
+                    const div = document.createElement('div');
+                    div.className = 'fav-item';
+                    div.innerHTML = `
+                        <img src="${item.image}" alt="${item.title}" onclick="openPlayer(${item.id}); closeFavoritesSidebar()">
+                        <div class="fav-item-info" onclick="openPlayer(${item.id}); closeFavoritesSidebar()">
+                            <div class="fav-item-title">${item.title}</div>
+                            <div class="fav-item-meta">${item.genre} • ★ ${item.rating}</div>
+                        </div>
+                        <button class="fav-item-remove" onclick="toggleFavorite(${item.id}, event)">
+                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        </button>
+                    `;
+                    favItemsList.appendChild(div);
+                }
+            });
+        }
+
+        // REPRODUCTOR EXCLUSIVO EN VENTANA EMERGENTE (MODAL)
+        function openPlayer(id) {
+            const item = mediaDatabase.find(m => m.id === id);
+            if (!item) return;
+
+            document.getElementById('modal-title').textContent = item.title;
+            document.getElementById('modal-rating').textContent = `★ ${item.rating}`;
+            document.getElementById('modal-type').textContent = item.type === 'pelicula' ? 'Película' : 'Serie';
+            document.getElementById('modal-year').textContent = item.year;
+            document.getElementById('modal-description').textContent = item.description;
+
+            videoModal.classList.add('active');
+        }
+
+        function openActiveHeroPlayer() {
+            openPlayer(currentHeroMediaId);
+        }
+
+        function closeModal() {
+            videoModal.classList.remove('active');
+        }
+
+        // CERRAR MODAL SI SE HACE CLICK AFUERA DE LA CAJA
+        window.onclick = function(event) {
+            if (event.target == videoModal) {
+                closeModal();
+            }
+        }
     </script>
 </body>
-</html>
+    </html>
