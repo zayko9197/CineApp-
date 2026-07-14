@@ -2,1054 +2,363 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CinemaX Premium Mobile</title>
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineMax - Películas y Series en Streaming</title>
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        /* --- VARIABLES DE TEMA ADAPTATIVAS --- */
+        /* ==========================================================================
+           VARIABLES Y CONFIGURACIÓN BASE
+           ========================================================================== */
         :root {
-            --bg-black: #000000;
-            --bg-card: #16161a;
-            --bg-pill: #1f1f24;
-            --accent-color: #8b5cf6; 
-            --text-white: #ffffff;
-            --text-gray: #a1a1aa;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --shadow-top10: #000000;
+            --bg-color: #0f1014;
+            --card-bg: #1a1c23;
+            --accent-color: #e50914; /* Rojo cinematográfico */
+            --text-color: #ffffff;
+            --text-secondary: #9ca3af;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        [data-theme="light"] {
-            --bg-black: #f4f4f5;
-            --bg-card: #ffffff;
-            --bg-pill: #e4e4e7;
-            --text-white: #09090b;
-            --text-gray: #71717a;
-            --border-color: rgba(0, 0, 0, 0.12);
-            --shadow-top10: #e4e4e7;
-        }
-
-        body.font-small { font-size: 13px; }
-        body.font-small h1 { font-size: 1.5rem; }
-        body.font-normal { font-size: 16px; }
-        body.font-large { font-size: 19px; }
-        body.font-large h1 { font-size: 2.1rem; }
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            transition: background-color 0.25s, color 0.25s, border-color 0.25s;
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--bg-black);
-            color: var(--text-white);
-            padding-bottom: 110px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* --- PANTALLAS DE CARGA --- */
-        .splash-screen {
-            position: fixed;
+        /* ==========================================================================
+           HEADER / NAVEGACIÓN
+           ========================================================================== */
+        header {
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #000000;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        .splash-logo {
-            font-size: 3rem;
-            font-weight: 900;
-            color: #ffffff;
-            letter-spacing: -1px;
-            opacity: 0;
-            transform: scale(0.85);
-            animation: splashPop 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        .splash-logo span { color: var(--accent-color); }
-        .splash-screen.fade-out { opacity: 0; transform: translateY(-30px); pointer-events: none; }
-
-        @keyframes splashPop {
-            0% { opacity: 0; transform: scale(0.8); filter: blur(4px); }
-            100% { opacity: 1; transform: scale(1); filter: blur(0px); }
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(15, 16, 20, 0.98);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            padding: 15px 0;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* --- HEADER PRINCIPAL --- */
-        .main-header {
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 16px 4px 16px;
-        }
-        .main-header h1 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
-        .main-header h1 span { color: var(--accent-color); }
-        
-        .settings-trigger {
-            background: var(--bg-pill); border: none; color: var(--text-white);
-            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; cursor: pointer;
+            padding: 0 40px;
         }
 
-        /* --- BUSCADOR --- */
-        .search-container-box { padding: 0 16px; margin-top: 12px; margin-bottom: 16px; display: none; }
-        .search-container-box.show { display: block; }
-        .search-input-wrapper {
-            display: flex; background-color: var(--bg-pill); padding: 12px 16px;
-            border-radius: 14px; align-items: center; gap: 10px; border: 1px solid transparent;
-        }
-        .search-input-wrapper:focus-within { border-color: var(--accent-color); }
-        .search-input-wrapper input { background: none; border: none; color: var(--text-white); width: 100%; font-size: 1rem; outline: none; }
-
-        /* --- PANTALLAS --- */
-        .page-view { display: none; }
-        .page-view.active-view { display: block; }
-
-        /* --- BOTONES DE ACCIÓN RÁPIDA --- */
-        .quick-actions { display: flex; gap: 8px; padding: 10px 15px; width: 100%; }
-        .quick-actions .pill-btn {
-            flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
-            padding: 10px 4px; font-size: 13px; background: #181818; color: #FFFFFF; border: 1px solid #282828; border-radius: 20px; cursor: pointer;
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            cursor: pointer;
         }
 
-        /* --- HERO BANNER --- */
-        .hero-container { padding: 0 16px; margin-bottom: 16px; }
-        .hero-card {
-            position: relative; height: 230px; border-radius: 24px; overflow: hidden;
-            background-size: cover; background-position: center 30%;
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; cursor: pointer;
-            transition: opacity 0.4s ease-in-out;
+        .logo span {
+            color: var(--accent-color);
         }
-        .hero-card.fade-out { opacity: 0; }
-        
-        .badge-movie {
-            position: absolute; top: 20px; left: 20px; background-color: var(--accent-color);
-            color: white; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s;
         }
-        .hero-card h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-        .hero-meta { display: flex; gap: 8px; font-size: 0.8rem; color: #f4f4f5; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
 
-        .slider-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 24px; }
-        .dot { width: 6px; height: 6px; background-color: var(--bg-pill); border-radius: 50%; transition: 0.3s; cursor: pointer; }
-        .dot.active { width: 20px; background-color: var(--accent-color); border-radius: 4px; }
-
-        /* --- CONTENEDORES DE CAROUSEL --- */
-        .section-container { margin-bottom: 28px; }
-        .section-title-bar { display: flex; justify-content: space-between; align-items: center; padding: 0 16px; margin-bottom: 14px; }
-        .section-title-bar h2 { font-size: 1.15rem; font-weight: 700; color: var(--text-white); }
-        .btn-view-more { background-color: var(--bg-pill); color: var(--text-white); border: none; padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
-
-        .horizontal-scroll { display: flex; gap: 14px; overflow-x: auto; padding: 0 16px; }
-        .horizontal-scroll::-webkit-scrollbar { display: none; }
-
-        /* --- TARJETAS POSTERS --- */
-        .movie-poster-card { flex: 0 0 130px; position: relative; }
-        .poster-wrapper { width: 100%; height: 185px; border-radius: 16px; overflow: hidden; background-color: var(--bg-card); cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .poster-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        
-        .fav-toast-btn {
-            position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); border: none; color: white;
-            width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; cursor: pointer; z-index: 5;
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-color);
         }
-        .fav-toast-btn.is-fav { color: var(--accent-color) !important; }
 
-        /* --- COMPONENTE TOP 10 --- */
-        .top10-card { flex: 0 0 165px; position: relative; display: flex; align-items: flex-end; height: 190px; margin-left: 15px; }
-        .top10-number {
-            font-size: 7.5rem; font-weight: 900; line-height: 1; position: absolute; left: -20px; bottom: -15px; z-index: 2; color: var(--shadow-top10);
-            text-shadow: 2px 2px 0px var(--accent-color), -2px -2px 0px var(--accent-color), 2px -2px 0px var(--accent-color), -2px 2px 0px var(--accent-color);
-            user-select: none;
+        /* Buscador */
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
         }
-        .top10-poster { width: 120px; height: 170px; border-radius: 12px; overflow: hidden; z-index: 3; margin-left: auto; background-color: var(--bg-card); cursor: pointer; }
-        .top10-poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        /* --- PÁGINA DE AJUSTES --- */
-        .settings-list { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .settings-group { background-color: var(--bg-card); border-radius: 16px; padding: 16px; box-shadow: 0 4px 14px rgba(0,0,0,0.04); }
-        .settings-group-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; padding-left: 4px; letter-spacing: 0.5px; }
-        .settings-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-color); }
-        .settings-item:last-child { border-bottom: none; }
-        .settings-text h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 2px; color: var(--text-white); }
-        .settings-text p { font-size: 0.78rem; color: var(--text-gray); }
-        
-        .switch-control { position: relative; display: inline-block; width: 46px; height: 26px; }
-        .switch-control input { opacity: 0; width: 0; height: 0; }
-        .slider-toggle { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .3s; border-radius: 34px; }
-        .slider-toggle:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider-toggle { background-color: var(--accent-color); }
-        input:checked + .slider-toggle:before { transform: translateX(20px); }
-
-        .settings-select { background-color: var(--bg-pill); color: var(--text-white); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; outline: none; }
-
-        .grid-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; padding: 16px; }
-
-        /* --- MENU BAR --- */
-        .bottom-nav-container { position: fixed; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; z-index: 1000; padding: 0 24px; transition: transform 0.3s ease; }
-        .bottom-nav-container.hide-nav { transform: translateY(120px); pointer-events: none; }
-        .bottom-nav {
-            background: rgba(22, 22, 26, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            width: 100%; max-width: 400px; height: 66px; border-radius: 30px; display: flex;
-            justify-content: space-around; align-items: center; border: 1px solid var(--border-color);
+        .search-box input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid transparent;
+            padding: 8px 15px;
+            padding-right: 35px;
+            border-radius: 20px;
+            color: white;
+            outline: none;
+            transition: all 0.3s ease;
+            width: 220px;
         }
-        [data-theme="light"] .bottom-nav { background: rgba(255, 255, 255, 0.85); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); text-decoration: none; font-size: 0.7rem; font-weight: 500; gap: 4px; width: 65px; }
-        .nav-item i { font-size: 1.35rem; }
-        .nav-item.active { color: var(--text-white); }
-        .nav-item.active .icon-wrapper { background-color: rgba(139, 92, 246, 0.12); padding: 4px 16px; border-radius: 16px; color: var(--accent-color); }
-    
-        /* --- BANNER DE SOLICITUD --- */
-        .request-banner {
-            background: rgba(255, 255, 255, 0.05); border-left: 4px solid #2ba6a2; border-radius: 8px;
-            margin: 15px 15px 5px 15px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;
-        }
-        .request-content { display: flex; align-items: center; gap: 12px; }
-        .request-icon { color: #2ba6a2; font-size: 20px; font-weight: bold; }
-        .request-text { color: #E0E0E0; font-size: 14px; margin: 0; }
-        .request-text strong { color: #FFFFFF; }
-        .request-arrow { color: #888888; font-size: 14px; }
 
-        .explore-grid { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)) !important; gap: 12px !important; padding: 16px !important; }
-        .explore-grid .movie-poster-card { width: 100% !important; max-width: 100% !important; }
-        .explore-grid .movie-poster-card .poster-wrapper { height: 165px !important; }
+        .search-box input:focus {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent-color);
+        }
 
-        /* --- SECCIÓN DE RECOMENDACIONES --- */
-        .search-suggestions { width: 100%; padding: 0 16px; box-sizing: border-box; margin-top: 15px; }
-        .suggestions-title { color: #ffffff; font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; letter-spacing: 0.3px; }
-        .suggestion-item {
-            display: flex; align-items: center; background: #111111; border-radius: 10px; padding: 10px 12px;
-            margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.05); cursor: pointer;
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            color: var(--text-secondary);
+            pointer-events: none;
         }
-        .suggestion-img { width: 80px; height: 48px; object-fit: cover; border-radius: 6px; margin-right: 14px; }
-        .suggestion-info { flex-grow: 1; display: flex; flex-direction: column; }
-        .suggestion-name { color: #ffffff; font-size: 0.95rem; font-weight: 500; margin-bottom: 2px; }
-        .suggestion-type { color: #888888; font-size: 0.75rem; }
 
-        /* --- ESTILOS DEL MODAL DE CAPÍTULOS --- */
-        .series-modal-backdrop {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            z-index: 10000; display: flex; justify-content: center; align-items: flex-end;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        /* ==========================================================================
+           CONTENIDO Y TARJETAS (GRID)
+           ========================================================================== */
+        .content-container {
+            max-width: 1400px;
+            margin: 40px auto 0 auto;
+            position: relative;
+            z-index: 10;
+            padding: 0 40px;
         }
-        .series-modal-backdrop.show { opacity: 1; pointer-events: auto; }
-        .series-modal-content {
-            background: var(--bg-card); width: 100%; max-width: 500px;
-            border-top-left-radius: 24px; border-top-right-radius: 24px;
-            max-height: 80vh; overflow-y: auto; padding: 24px 20px;
-            transform: translateY(100%); transition: transform 0.3s ease;
-            box-shadow: 0 -8px 32px rgba(0,0,0,0.5); border-top: 1px solid var(--border-color);
-        }
-        .series-modal-backdrop.show .series-modal-content { transform: translateY(0); }
-        .series-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .series-modal-title { font-size: 1.3rem; font-weight: 800; color: var(--text-white); }
-        .series-modal-close { background: var(--bg-pill); border: none; color: var(--text-white); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; }
-        
-        .season-tabs-container { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 16px; padding-bottom: 4px; }
-        .season-tabs-container::-webkit-scrollbar { display: none; }
-        .season-tab {
-            background: var(--bg-pill); border: 1px solid var(--border-color); color: var(--text-gray);
-            padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap;
-        }
-        .season-tab.active { background: var(--accent-color); color: white; border-color: transparent; }
 
-        .episodes-list-box { display: flex; flex-direction: column; gap: 10px; }
-        .episode-row-btn {
-            background: var(--bg-pill); border: 1px solid var(--border-color); border-radius: 12px;
-            padding: 14px 16px; display: flex; justify-content: space-between; align-items: center;
-            color: var(--text-white); font-weight: 600; font-size: 0.95rem; text-align: left; cursor: pointer; width: 100%;
+        .movie-section {
+            margin-bottom: 50px;
         }
-        .episode-row-btn i { color: var(--accent-color); font-size: 1.2rem; }
+
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 22px;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .movie-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s;
+            aspect-ratio: 16/10;
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-color: #2a2d37;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(15, 16, 20, 0.95) 20%, rgba(15, 16, 20, 0.4) 60%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Efectos Hover */
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(229, 9, 20, 0.25);
+        }
+
+        .movie-card:hover img {
+            transform: scale(1.08);
+        }
+
+        .movie-card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .card-overlay h4 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .rating {
+            color: #ffc107;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* ==========================================================================
+           FOOTER
+           ========================================================================== */
+        footer {
+            text-align: center;
+            padding: 50px 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 60px;
+        }
+
+        /* ==========================================================================
+           RESPONSIVE DESIGN (MÓVILES Y TABLETS)
+           ========================================================================== */
+        @media (max-width: 768px) {
+            .header-container { flex-direction: column; gap: 15px; padding: 15px 20px; }
+            .content-container { margin-top: 20px; padding: 0 20px; }
+            .movies-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+            .search-box input { width: 100%; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="splash-screen" id="splashScreen">
-        <div class="splash-logo">Cinema<span>X</span></div>
-    </div>
-
-    <!-- MODAL DE SERIES DINÁMICO -->
-    <div class="series-modal-backdrop" id="seriesModal" onclick="closeSeriesModal()">
-        <div class="series-modal-content" onclick="event.stopPropagation()">
-            <div class="series-modal-header">
-                <h3 class="series-modal-title" id="mSeriesTitle">Nombre de Serie</h3>
-                <button class="series-modal-close" onclick="closeSeriesModal()"><i class="ri-close-line"></i></button>
-            </div>
-            <!-- CONTENEDOR DE TEMPORADAS -->
-            <div class="season-tabs-container" id="mSeasonTabs"></div>
-            <!-- CONTENEDOR DE CAPÍTULOS -->
-            <div class="episodes-list-box" id="mEpisodesContainer"></div>
-        </div>
-    </div>
-
-    <div class="search-container-box" id="searchBox">
-        <div class="search-input-wrapper">
-            <i class="ri-search-line"></i>
-            <input type="text" id="searchInput" placeholder="Buscar películas o series..." oninput="perfectSearch(this.value)">
-        </div>
-    </div>
-
-    <!-- RECOMENDACIONES -->
-    <div class="search-suggestions" id="searchSuggestions" style="display: none;">
-        <h3 class="suggestions-title">Te recomendamos</h3>
-        <div class="suggestion-item" onclick="playMedia(101)">
-            <img src="https://cinehdplus.biz/uploads/posts/2023-05/1684928728-508918916.webp" alt="Portada" class="suggestion-img">
-            <div class="suggestion-info">
-                <span class="suggestion-name">Fast & Furious X</span>
-                <span class="suggestion-type">Película • Acción</span>
+    <header id="main-header">
+        <div class="header-container">
+            <h1 class="logo" onclick="window.location.reload()">Cine<span>Max</span></h1>
+            <nav class="nav-links">
+                <a href="#" class="active">Inicio</a>
+                <a href="#">Películas</a>
+                <a href="#">Series</a>
+                <a href="#">Mi Lista</a>
+            </nav>
+            <div class="search-box">
+                <input type="text" id="movie-search" placeholder="Buscar películas o series...">
+                <i class="fas fa-search"></i>
             </div>
         </div>
-        <div class="suggestion-item" onclick="openEpisodesModal(16)">
-            <img src="https://m.media-amazon.com/images/M/MV5BZThiMjU5MjItNDZmOS00MDE2LWI2ZTYtYmRjNzA3NWQ0MjdiXkEyXkFqcGc@._V1_.jpg" alt="Portada" class="suggestion-img">
-            <div class="suggestion-info">
-                <span class="suggestion-name">La casa del dragón</span>
-                <span class="suggestion-type">Serie • Acción</span>
-            </div>
-        </div>
-    </div>
+    </header>
 
-    <!-- PANTALLA INICIO -->
-    <div id="homePage" class="page-view active-view">
-        <header class="main-header">
-            <h1>Cinema<span>X</span></h1>
-            <button class="settings-trigger" onclick="openSettingsPage()"><i class="ri-settings-4-fill"></i></button>
-        </header>
-
-        <div class="quick-actions">
-            <button class="pill-btn" id="btnFavs" onclick="toggleQuickFilter('favs')"><i class="ri-heart-fill"></i> Favoritos</button>
-            <button class="pill-btn" id="btnHist" onclick="toggleQuickFilter('history')"><i class="ri-history-line"></i> Historial</button>
-        </div>
-
-        <div class="request-banner" onclick="goToSection('solicitud')">
-            <div class="request-content">
-                <span class="request-icon">+</span>
-                <p class="request-text">¿No la encuentras? <strong>Solicitar Película o Serie</strong></p>
-            </div>
-            <span class="request-arrow">➔</span>
-        </div>
-
-        <div class="hero-container">
-            <div id="heroCard" class="hero-card" onclick="triggerHeroClick()"></div>
-        </div>
-        <div class="slider-dots" id="heroDots"></div>
-
-        <div id="dynamicSections">
-            <div class="section-container">
-                <div class="section-title-bar"><h2>Top 10 Hoy</h2></div>
-                <div class="horizontal-scroll" id="scrollTop10" style="padding-top: 10px; padding-bottom: 15px;"></div>
-            </div>
-            <div class="section-container">
-                <div class="section-title-bar"><h2>Películas Recientes</h2><button class="btn-view-more" onclick="seeAll('movie')">Ver más</button></div>
-                <div class="horizontal-scroll" id="scrollMovies"></div>
-            </div>
-            <div class="section-container">
-                <div class="section-title-bar"><h2>Sci-Fi & Terror</h2><button class="btn-view-more" onclick="seeAll('ciencia ficción, terror')">Ver más</button></div>
-                <div class="horizontal-scroll" id="scrollSciFi"></div> 
-            </div>
-            <div class="section-container">
-                <div class="section-title-bar"><h2>Series Destacadas</h2><button class="btn-view-more" onclick="seeAll('series')">Ver más</button></div>
-                <div class="horizontal-scroll" id="scrollSeries"></div>
-            </div>
-            <div class="section-container">
-                <div class="section-title-bar"><h2>Anime</h2><button class="btn-view-more" onclick="seeAll('Anime')">Ver más</button></div>
-                <div class="horizontal-scroll" id="scrollAnime"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- EXPLORAR -->
-    <div id="explorePage" class="page-view">
-        <div class="section-title-bar" style="padding: 20px 16px 0 16px;">
-            <h2 id="exploreTitle">Explorar</h2>
-            <button class="btn-view-more" onclick="goHome()">Volver</button>
-        </div>
-        <div class="grid-view" id="exploreGrid"></div>
-    </div>
-
-    <!-- PANTALLA AJUSTES -->
-    <div id="settingsPage" class="page-view">
-        <div class="section-title-bar" style="padding: 20px 16px 4px 16px;">
-            <h2>Ajustes</h2>
-            <button class="btn-view-more" onclick="goHome()">Guardar</button>
-        </div>
-        <div class="settings-list">
-            <div class="settings-group">
-                <div class="settings-group-title">Personalización de Interfaz</div>
-                <div class="settings-item">
-                    <div class="settings-text">
-                        <h4>Modo Noche / Día</h4>
-                        <p>Afecta a la App general.</p>
+    <main class="content-container">
+        
+        <section class="movie-section">
+            <h3 class="section-title">Películas en Tendencia</h3>
+            <div class="movies-grid">
+                <div class="movie-card play-btn" data-video="YoHD9XEInc0">
+                    <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&auto=format&fit=crop" alt="Origen">
+                    <div class="card-overlay">
+                        <h4>Origen (Inception)</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 8.8</span>
                     </div>
-                    <label class="switch-control">
-                        <input type="checkbox" id="themeModeCheck" onchange="updateThemeSetting(this.checked)">
-                        <span class="slider-toggle"></span>
-                    </label>
                 </div>
-                <div class="settings-item">
-                    <div class="settings-text">
-                        <h4>Color Temático</h4>
-                        <p>Elige tu tono de acento preferido.</p>
+                <div class="movie-card play-btn" data-video="EXeTwQWrcwY">
+                    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=400&auto=format&fit=crop" alt="Batman">
+                    <div class="card-overlay">
+                        <h4>Batman: El Caballero de la Noche</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 9.0</span>
                     </div>
-                    <select class="settings-select" id="brandColorSelect" onchange="updateBrandColorSetting(this.value)">
-                        <option value="#8b5cf6">Violeta Premium</option>
-                        <option value="#e50914">Rojo Cinema</option>
-                        <option value="#2563eb">Azul Neón</option>
-                        <option value="#5cf6d2">Verde Menta</option>
-                        <option value="#14b9de">Azul Celeste</option>
-                        <option value="#14de79">Verde Lima</option>
-                    </select>
                 </div>
-                <div class="settings-item">
-                    <div class="settings-text">
-                        <h4>Escala del Texto</h4>
-                        <p>Modifica el tamaño de letra general.</p>
+                <div class="movie-card play-btn" data-video="gCcx85y54qc">
+                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=400&auto=format&fit=crop" alt="Blade Runner">
+                    <div class="card-overlay">
+                        <h4>Blade Runner 2049</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 8.0</span>
                     </div>
-                    <select class="settings-select" id="fontSizeSelect" onchange="updateFontSizeSetting(this.value)">
-                        <option value="small">Pequeña</option>
-                        <option value="normal">Normal</option>
-                        <option value="large">Grande</option>
-                    </select>
+                </div>
+                <div class="movie-card play-btn" data-video="N_gD9-Oa0fg">
+                    <img src="https://images.unsplash.com/photo-1478720143033-6a972678da30?q=80&w=400&auto=format&fit=crop" alt="Sin tiempo para morir">
+                    <div class="card-overlay">
+                        <h4>Sin Tiempo para Morir</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 7.3</span>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- NAVBAR -->
-    <div class="bottom-nav-container" id="bottomNavContainer">
-        <nav class="bottom-nav">
-            <a href="#" class="nav-item active" id="navHome" onclick="navigate('home')"><div class="icon-wrapper"><i class="ri-home-5-fill"></i></div><span>Inicio</span></a>
-            <a href="#" class="nav-item" id="navMovies" onclick="navigate('movies')"><div class="icon-wrapper"><i class="ri-clapperboard-line"></i></div><span>Películas</span></a>
-            <a href="#" class="nav-item" id="navSeries" onclick="navigate('series')"><div class="icon-wrapper"><i class="ri-slideshow-3-line"></i></div><span>Series</span></a>
-            <a href="#" class="nav-item" id="navSearch" onclick="navigate('search')"><div class="icon-wrapper"><i class="ri-search-line"></i></div><span>Buscar</span></a>
-        </nav>
-    </div>
+        <section class="movie-section">
+            <h3 class="section-title">Series Populares</h3>
+            <div class="movies-grid">
+                <div class="movie-card play-btn" data-video="b9EkMc79ZSU">
+                    <img src="https://images.unsplash.com/photo-1574375927938-d5a98e8edd86?q=80&w=400&auto=format&fit=crop" alt="Stranger Things">
+                    <div class="card-overlay">
+                        <h4>Stranger Things</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 8.7</span>
+                    </div>
+                </div>
+                <div class="movie-card play-btn" data-video="HhesaQUpPyU">
+                    <img src="https://images.unsplash.com/photo-1616530940355-351fabd9524b?q=80&w=400&auto=format&fit=crop" alt="Breaking Bad">
+                    <div class="card-overlay">
+                        <h4>Breaking Bad</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 9.5</span>
+                    </div>
+                </div>
+                <div class="movie-card play-btn" data-video="rrwycJ08ESA">
+                    <img src="https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=400&auto=format&fit=crop" alt="Dark">
+                    <div class="card-overlay">
+                        <h4>Dark</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 8.8</span>
+                    </div>
+                </div>
+                <div class="movie-card play-btn" data-video="aOC8E8z_ifw">
+                    <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400&auto=format&fit=crop" alt="The Mandalorian">
+                    <div class="card-overlay">
+                        <h4>The Mandalorian</h4>
+                        <span class="rating"><i class="fas fa-star"></i> 8.7</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 CineMax. Diseñado con pasión para los amantes del cine y la televisión.</p>
+    </footer>
 
     <script>
-        // --- BASE DE DATOS OPTIMIZADA DE CONTENIDOS ---
-        const db = [
-            { id: 99, title: "Backroms", year: 2026, rating: "6.1", genre: "Acción,ciencia ficción", type: "movie", img: "https://lzrevdnsythclelnteod.supabase.co/storage/v1/render/image/public/images/articles/1780767676222-2wpak8vp5jx.jpg?width=1200&height=900&quality=78&resize=cover", isHero: true },
-            { id: 202, title: "El día de la revelación", year: 2026, rating: "6.7", genre: "invasión alienígena, ciencia ficción", type: "movie", img: "https://uscdn.eltribuno.com/062026/1781313365806.jpg?&cw=1200&ch=630", isHero: true },
-            { id: 203, title: "Michael", year: 2026, rating: "7.5", genre: "drama,historia", type: "movie", img: "https://www.diariodecultura.com.ar/wp-content/uploads/2026/04/michael.jpg", isHero: true },
-            { id: 204, title: "Mario Galaxy", year: 2026, rating: "6.3", genre: "Acción,animación", type: "movie", img: "https://i.scdn.co/image/ab67616d0000b2738b2ece622426759faa9b9059", isHero: true },
-            { id: 205, title: "TOY Story", year: 2026, rating: "7.5", genre: "Animación, aventura", type: "movie", img: "https://www.razon.com.mx/resizer/v2/66QLBFCTKZGNTPYJ3YNLW4CCSI.png?auth=955d9f6596840336f0761eae8242bbf9c7a63a4c9c8a165c88a00aff9a86a072&smart=true&width=1100&height=550&quality=85", isHero: true },
+        // REDIRECCIÓN DIRECTA A YOUTUBE (Evita bloqueos de Sandbox)
+        const playButtons = document.querySelectorAll('.play-btn');
 
-            { id: 101, title: "Fast & Furious X", year: 2023, rating: "5.7", genre: "Acción", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2023-05/1684928728-508918916.webp", isTop10: true, topRank: 1 },
-            { id: 102, title: "Star Wars: The Mandalorian and Grogu", year: 2026, rating: "9.1", genre: "Acción, ciencia ficción", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2026-05/1779426679-672134473.webp", isTop10: true, topRank: 2 },
-            { id: 103, title: "Atlas", year: 2024, rating: "5.7", genre: "inteligencia artificial / Acción", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2024-05/1716651518-645560979.webp", isTop10: true, topRank: 3 },
-            { id: 104, title: "Godzilla:Minus One", year: 2023, rating: "9.1", genre: "Acción", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2023-12/1702866029-135108948.webp", isTop10: true, topRank: 4 },
-            { id: 105, title: "Migración 2", year: 2026, rating: "5.2", genre: "Desastre, supervivencia", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2026-01/1768273639-678779429.webp", isTop10: true, topRank: 5 },
-            { id: 106, title: "Jurassic World: El renacer", year: 2025, rating: "5.8", genre: "Aventura", type: "movie", img: "https://image.tmdb.org/t/p/w342/2sbGd7kDhMicDkT097FR9a2JyGU.jpg", isTop10: true, topRank: 6 },
-            { id: 107, title: "28 Días después", year: 2002, rating: "7.5", genre: "Terror y monstruos, supervivencia", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2023-08/1691592804-537892884.webp", isTop10: true, topRank: 7 },
-            { id: 108, title: "El diablo viste a la moda 2", year: 2026, rating: "6.5", genre: "Drama, comedia", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2026-05/1777626536-577581471.webp", isTop10: true, topRank: 8 },
-            { id: 109, title: "Los Cuatro Fantásticos: Primeros pasos", year: 2025, rating: "6.8", genre: "Marvel, ciencia ficción espacial ", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2025-07/1753367659-762607270.webp", isTop10: true, topRank: 9 },
-            { id: 110, title: "La sustancia", year: 2024, rating: "7.2", genre: "comedia oscura, horror corporal", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2024-09/1726893859-454734062.webp", isTop10: true, topRank: 10 },
-
-            { id: 530, title: "Demon Slayer Movie", year: 2025, rating: "8.7", genre: "Anime", type: "Anime", img: "https://cinehdplus.biz/uploads/posts/2024-01/1704989480-271880237.webp" },
-            { id: 55, title: "Cumbres Borrascosas", year: 2026, rating: "6.1", genre: "drama de época, drama", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2026-02/1771551386-404436879.webp" },
-            { id: 2, title: "Peaky Blinders: El hombre inmortal", year: 2026, rating: "6.5", genre: "Acción", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2026-03/1773195845-936193556.webp" },
-            { id: 4, title: "Te van a matar", year: 2026, rating: "8.9", genre: "Sci-Fi", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2026-03/1774920835-229809965.webp" },
-            { id: 531, title: "Avatar 3:fuego y cenizas", year: 2025, rating: "8.7", genre: "Acción, Aventura", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2025-12/1765985132-546268687.webp" },
-            { id: 532, title: "Máquina de guerra", year: 2026, rating: "1h 46m", rating: "6.3", genre: "Acción", type: "movie", img: "https://cinehdplus.biz/uploads/posts/2026-03/1772847534-468045175.webp" },
-            
-            { 
-                id: 15, title: "La casa del dragón", year: 2026, rating: "8.9", genre: "Sci-Fi", type: "series", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400",
-                seasons: {
-                    "Temporada 1": [
-                        { id: 1501, title: "T1: Capítulo 1", link: "https://playerkuki.site/?i=2" }, { id: 1502, title: "T1: Capítulo 2", link: "https://playerkuki.site/?i=1" },
-                        { id: 1503, title: "T1: Capítulo 3", link: "https://playerkuki.site/?i=2"}, { id: 1504, title: "T1: Capítulo 4", link: "AQUÍ_PEGAS_EL_ENLACE" },
-                        { id: 1505, title: "T1: Capítulo 5", link: "AQUÍ_PEGAS_EL_ENLACE" }, { id: 1506, title: "T1: Capítulo 6", link: "AQUÍ_PEGAS_EL_ENLACE" },
-                        { id: 1507, title: "T1: Capítulo 7", link: "AQUÍ_PEGAS_EL_ENLACE" }, { id: 1508, title: "T1: Capítulo 8", link: "AQUÍ_PEGAS_EL_ENLACE" },
-                        { id: 1509, title: "T1: Capítulo 9", link: "AQUÍ_PEGAS_EL_ENLACE" }, { id: 1510, title: "T1: Capítulo 10", link: "AQUÍ_PEGAS_EL_ENLACE" }
-                    ],
-                    "Temporada 2": [
-                        { id: 1521, title: "T2: Capítulo 1", link: "AQUÍ_PEGAS_EL_ENLACE" }, { id: 1522, title: "T2: Capítulo 2", link: "AQUÍ_PEGAS_EL_ENLACE" },
-                        { id: 1523, title: "T2: Capítulo 3", link: "AQUÍ_PEGAS_EL_ENLACE" }, { id: 1524, title: "T2: Capítulo 4", link: "AQUÍ_PEGAS_EL_ENLACE" },
-                        { id: 1525, title: "T2: Capítulo 5", link: "AQUÍ_PEGAS_EL_ENLACE" }, { id: 1526, title: "T2: Capítulo 6", link: "AQUÍ_PEGAS_EL_ENLACE" },
-                        { id: 1527, title: "T2: Capítulo 7", link: "AQUÍ_PEGAS_EL_ENLACE" }, { id: 1528, title: "T2: Capítulo 8", link: "AQUÍ_PEGAS_EL_ENLACE" }
-                    ],
-                    "Temporada 3": [
-                        { id: 1531, title: "T3: Capítulo 1", link: "AQUÍ_PEGAS_EL_ENLACE" }, { id: 1532, title: "T3: Capítulo 2", link: "AQUÍ_PEGAS_EL_ENLACE" },
-                        { id: 1533, title: "T3: Capítulo 3", link: "AQUÍ_PEGAS_EL_ENLACE" }, { id: 1534, title: "T3: Capítulo 4", link: "AQUÍ_PEGAS_EL_ENLACE" },
-                        { id: 1535, title: "T3: Capítulo 5" }, { id: 1536, title: "T3: Capítulo 6" },
-                        { id: 1537, title: "T3: Capítulo 7" }, { id: 1538, title: "T3: Capítulo 8" }
-                    ]
+        playButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const videoId = button.getAttribute('data-video');
+                if(videoId) {
+                    // Abre el video directamente de forma segura
+                    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
                 }
-            }, 
-            { 
-                id: 16, title: "La casa del dragon", year: 2026, rating: "8.3", genre: "Acción", type: "series", img: "https://m.media-amazon.com/images/M/MV5BZThiMjU5MjItNDZmOS00MDE2LWI2ZTYtYmRjNzA3NWQ0MjdiXkEyXkFqcGc@._V1_.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 1601, title: "T1: Capítulo 1" }, { id: 1602, title: "T1: Capítulo 2" }],
-                    "Temporada 2": [{ id: 1603, title: "T2: Capítulo 1" }, { id: 1604, title: "T2: Capítulo 2" }]
-                }
-            },
-            {
-                id: 17, title: "The Boys", year: 2026, rating: "8.7", genre: "Acción, Ciencia Ficción", type: "series", img: "https://image.tmdb.org/t/p/w342/7zm6w6Yg7vXvptR6ZAsG36v6360.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 1701, title: "T1: Capítulo 1" }, { id: 1702, title: "T1: Capítulo 2" }, { id: 1703, title: "T1: Capítulo 3" }, { id: 1704, title: "T1: Capítulo 4" }, { id: 1705, title: "T1: Capítulo 5" }, { id: 1706, title: "T1: Capítulo 6" }, { id: 1707, title: "T1: Capítulo 7" }, { id: 1708, title: "T1: Capítulo 8" }],
-                    "Temporada 2": [{ id: 1709, title: "T2: Capítulo 1" }, { id: 1710, title: "T2: Capítulo 2" }, { id: 1711, title: "T2: Capítulo 3" }, { id: 1712, title: "T2: Capítulo 4" }, { id: 1713, title: "T2: Capítulo 5" }, { id: 1714, title: "T2: Capítulo 6" }, { id: 1715, title: "T2: Capítulo 7" }, { id: 1716, title: "T2: Capítulo 8" }],
-                    "Temporada 3": [{ id: 1717, title: "T3: Capítulo 1" }, { id: 1718, title: "T3: Capítulo 2" }, { id: 1719, title: "T3: Capítulo 3" }, { id: 1720, title: "T3: Capítulo 4" }, { id: 1721, title: "T3: Capítulo 5" }, { id: 1722, title: "T3: Capítulo 6" }, { id: 1723, title: "T3: Capítulo 7" }, { id: 1724, title: "T3: Capítulo 8" }],
-                    "Temporada 4": [{ id: 1725, title: "T4: Capítulo 1" }, { id: 1726, title: "T4: Capítulo 2" }, { id: 1727, title: "T4: Capítulo 3" }, { id: 1728, title: "T4: Capítulo 4" }, { id: 1729, title: "T4: Capítulo 5" }, { id: 1730, title: "T4: Capítulo 6" }, { id: 1731, title: "T4: Capítulo 7" }, { id: 1732, title: "T4: Capítulo 8" }],
-                    "Temporada 5": [{ id: 1733, title: "T5: Capítulo 1" }, { id: 1734, title: "T5: Capítulo 2" }, { id: 1735, title: "T5: Capítulo 3" }, { id: 1736, title: "T5: Capítulo 4" }, { id: 1737, title: "T5: Capítulo 5" }, { id: 1738, title: "T5: Capítulo 6" }, { id: 1739, title: "T5: Capítulo 7" }, { id: 1740, title: "T5: Capítulo 8" }]
-                }
-            },
-            {
-                id: 18, title: "Invincible", year: 2026, rating: "8.9", genre: "Animación, Acción", type: "series", img: "https://image.tmdb.org/t/p/w342/d7wYmXvXptvQ9u2Z96v6z6AsG60.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 1801, title: "T1: Capítulo 1" }, { id: 1802, title: "T1: Capítulo 2" }, { id: 1803, title: "T1: Capítulo 3" }, { id: 1804, title: "T1: Capítulo 4" }, { id: 1805, title: "T1: Capítulo 5" }, { id: 1806, title: "T1: Capítulo 6" }, { id: 1807, title: "T1: Capítulo 7" }, { id: 1808, title: "T1: Capítulo 8" }],
-                    "Temporada 2": [{ id: 1809, title: "T2: Capítulo 1" }, { id: 1810, title: "T2: Capítulo 2" }, { id: 1811, title: "T2: Capítulo 3" }, { id: 1812, title: "T2: Capítulo 4" }, { id: 1813, title: "T2: Capítulo 5" }, { id: 1814, title: "T2: Capítulo 6" }, { id: 1815, title: "T2: Capítulo 7" }, { id: 1816, title: "T2: Capítulo 8" }],
-                    "Temporada 3": [{ id: 1817, title: "T3: Capítulo 1" }, { id: 1818, title: "T3: Capítulo 2" }, { id: 1819, title: "T3: Capítulo 3" }, { id: 1820, title: "T3: Capítulo 4" }, { id: 1821, title: "T3: Capítulo 5" }, { id: 1822, title: "T3: Capítulo 6" }, { id: 1823, title: "T3: Capítulo 7" }, { id: 1824, title: "T3: Capítulo 8" }],
-                    "Temporada 4": [{ id: 1825, title: "T4: Capítulo 1" }, { id: 1826, title: "T4: Capítulo 2" }, { id: 1827, title: "T4: Capítulo 3" }, { id: 1828, title: "T4: Capítulo 4" }, { id: 1829, title: "T4: Capítulo 5" }, { id: 1830, title: "T4: Capítulo 6" }, { id: 1831, title: "T4: Capítulo 7" }, { id: 1832, title: "T4: Capítulo 8" }]
-                }
-            },
-            {
-                id: 19, title: "Stranger Things", year: 2022, rating: "8.7", genre: "Terror, Sci-Fi", type: "series", img: "https://image.tmdb.org/t/p/w342/49YmXvXptvQ9u2Z96v6z6AsG61.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 1901, title: "T1: Capítulo 1" }, { id: 1902, title: "T1: Capítulo 2" }, { id: 1903, title: "T1: Capítulo 3" }, { id: 1904, title: "T1: Capítulo 4" }, { id: 1905, title: "T1: Capítulo 5" }, { id: 1906, title: "T1: Capítulo 6" }, { id: 1907, title: "T1: Capítulo 7" }, { id: 1908, title: "T1: Capítulo 8" }],
-                    "Temporada 2": [{ id: 1909, title: "T2: Capítulo 1" }, { id: 1910, title: "T2: Capítulo 2" }, { id: 1911, title: "T2: Capítulo 3" }, { id: 1912, title: "T2: Capítulo 4" }, { id: 1913, title: "T2: Capítulo 5" }, { id: 1914, title: "T2: Capítulo 6" }, { id: 1915, title: "T2: Capítulo 7" }, { id: 1916, title: "T2: Capítulo 8" }, { id: 1917, title: "T2: Capítulo 9" }],
-                    "Temporada 3": [{ id: 1918, title: "T3: Capítulo 1" }, { id: 1919, title: "T3: Capítulo 2" }, { id: 1920, title: "T3: Capítulo 3" }, { id: 1921, title: "T3: Capítulo 4" }, { id: 1922, title: "T3: Capítulo 5" }, { id: 1923, title: "T3: Capítulo 6" }, { id: 1924, title: "T3: Capítulo 7" }, { id: 1925, title: "T3: Capítulo 8" }],
-                    "Temporada 4": [{ id: 1926, title: "T4: Capítulo 1" }, { id: 1927, title: "T4: Capítulo 2" }, { id: 1928, title: "T4: Capítulo 3" }, { id: 1929, title: "T4: Capítulo 4" }, { id: 1930, title: "T4: Capítulo 5" }, { id: 1931, title: "T4: Capítulo 6" }, { id: 1932, title: "T4: Capítulo 7" }, { id: 1933, title: "T4: Capítulo 8" }, { id: 1934, title: "T4: Capítulo 9" }]
-                }
-            },
-            {
-                id: 20, title: "Breaking Bad", year: 2013, rating: "9.5", genre: "Drama, Crimen", type: "series", img: "https://image.tmdb.org/t/p/w342/ztkUQFLlC19VMESvPUu4zU6CLQb.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 2001, title: "T1: Capítulo 1" }, { id: 2002, title: "T1: Capítulo 2" }, { id: 2003, title: "T1: Capítulo 3" }, { id: 2004, title: "T1: Capítulo 4" }, { id: 2005, title: "T1: Capítulo 5" }, { id: 2006, title: "T1: Capítulo 6" }, { id: 2007, title: "T1: Capítulo 7" }],
-                    "Temporada 2": [{ id: 2008, title: "T2: Capítulo 1" }, { id: 2009, title: "T2: Capítulo 2" }, { id: 2010, title: "T2: Capítulo 3" }, { id: 2011, title: "T2: Capítulo 4" }, { id: 2012, title: "T2: Capítulo 5" }, { id: 2013, title: "T2: Capítulo 6" }, { id: 2014, title: "T2: Capítulo 7" }, { id: 2015, title: "T2: Capítulo 8" }, { id: 2016, title: "T2: Capítulo 9" }, { id: 2017, title: "T2: Capítulo 10" }, { id: 2018, title: "T2: Capítulo 11" }, { id: 2019, title: "T2: Capítulo 12" }, { id: 2020, title: "T2: Capítulo 13" }],
-                    "Temporada 3": [{ id: 2021, title: "T3: Capítulo 1" }, { id: 2022, title: "T3: Capítulo 2" }, { id: 2023, title: "T3: Capítulo 3" }, { id: 2024, title: "T3: Capítulo 4" }, { id: 2025, title: "T3: Capítulo 5" }, { id: 2026, title: "T3: Capítulo 6" }, { id: 2027, title: "T3: Capítulo 7" }, { id: 2028, title: "T3: Capítulo 8" }, { id: 2029, title: "T3: Capítulo 9" }, { id: 2030, title: "T3: Capítulo 10" }, { id: 2031, title: "T3: Capítulo 11" }, { id: 2032, title: "T3: Capítulo 12" }, { id: 2033, title: "T3: Capítulo 13" }],
-                    "Temporada 4": [{ id: 2034, title: "T4: Capítulo 1" }, { id: 2035, title: "T4: Capítulo 2" }, { id: 2036, title: "T4: Capítulo 3" }, { id: 2037, title: "T4: Capítulo 4" }, { id: 2038, title: "T4: Capítulo 5" }, { id: 2039, title: "T4: Capítulo 6" }, { id: 2040, title: "T4: Capítulo 7" }, { id: 2041, title: "T4: Capítulo 8" }, { id: 2042, title: "T4: Capítulo 9" }, { id: 2043, title: "T4: Capítulo 10" }, { id: 2044, title: "T4: Capítulo 11" }, { id: 2045, title: "T4: Capítulo 12" }, { id: 2046, title: "T4: Capítulo 13" }],
-                    "Temporada 5": [{ id: 2047, title: "T5: Capítulo 1" }, { id: 2048, title: "T5: Capítulo 2" }, { id: 2049, title: "T5: Capítulo 3" }, { id: 2050, title: "T5: Capítulo 4" }, { id: 2051, title: "T5: Capítulo 5" }, { id: 2052, title: "T5: Capítulo 6" }, { id: 2053, title: "T5: Capítulo 7" }, { id: 2054, title: "T5: Capítulo 8" }, { id: 2055, title: "T5: Capítulo 9" }, { id: 2056, title: "T5: Capítulo 10" }, { id: 2057, title: "T5: Capítulo 11" }, { id: 2058, title: "T5: Capítulo 12" }, { id: 2059, title: "T5: Capítulo 13" }, { id: 2060, title: "T5: Capítulo 14" }, { id: 2061, title: "T5: Capítulo 15" }, { id: 2062, title: "T5: Capítulo 16" }]
-                }
-            },
-
-            {
-                id: 31, title: "Succession", year: 2023, rating: "8.3", genre: "Drama", type: "series", img: "https://image.tmdb.org/t/p/w342/77v96C2pD66WvHwBscB7f6ZisZ9.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 3101, title: "T1: Capítulo 1" }, { id: 3102, title: "T1: Capítulo 2" }, { id: 3103, title: "T1: Capítulo 3" }, { id: 3104, title: "T1: Capítulo 4" }, { id: 3105, title: "T1: Capítulo 5" }, { id: 3106, title: "T1: Capítulo 6" }, { id: 3107, title: "T1: Capítulo 7" }, { id: 3108, title: "T1: Capítulo 8" }, { id: 3109, title: "T1: Capítulo 9" }, { id: 3110, title: "T1: Capítulo 10" }],
-                    "Temporada 2": [{ id: 3111, title: "T2: Capítulo 1" }, { id: 3112, title: "T2: Capítulo 2" }, { id: 3113, title: "T2: Capítulo 3" }, { id: 3114, title: "T2: Capítulo 4" }, { id: 3115, title: "T2: Capítulo 5" }, { id: 3116, title: "T2: Capítulo 6" }, { id: 3117, title: "T2: Capítulo 7" }, { id: 3118, title: "T2: Capítulo 8" }, { id: 3119, title: "T2: Capítulo 9" }, { id: 3120, title: "T2: Capítulo 10" }],
-                    "Temporada 3": [{ id: 3121, title: "T3: Capítulo 1" }, { id: 3122, title: "T3: Capítulo 2" }, { id: 3123, title: "T3: Capítulo 3" }, { id: 3124, title: "T3: Capítulo 4" }, { id: 3125, title: "T3: Capítulo 5" }, { id: 3126, title: "T3: Capítulo 6" }, { id: 3127, title: "T3: Capítulo 7" }, { id: 3128, title: "T3: Capítulo 8" }, { id: 3129, title: "T3: Capítulo 9" }, { id: 3130, title: "T3: Capítulo 10" }],
-                    "Temporada 4": [{ id: 3131, title: "T4: Capítulo 1" }, { id: 3132, title: "T4: Capítulo 2" }, { id: 3133, title: "T4: Capítulo 3" }, { id: 3134, title: "T4: Capítulo 4" }, { id: 3135, title: "T4: Capítulo 5" }, { id: 3136, title: "T4: Capítulo 6" }, { id: 3137, title: "T4: Capítulo 7" }, { id: 3138, title: "T4: Capítulo 8" }, { id: 3139, title: "T4: Capítulo 9" }, { id: 3140, title: "T4: Capítulo 10" }]
-                }
-            },
-            {
-                id: 32, title: "Squid Game", year: 2021, rating: "7.8", genre: "Acción, Misterio", type: "series", img: "https://image.tmdb.org/t/p/w342/d9v6g99wE6Z70JmZ9uUoQW88m.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 3201, title: "T1: Capítulo 1" }, { id: 3202, title: "T1: Capítulo 2" }, { id: 3203, title: "T1: Capítulo 3" }, { id: 3204, title: "T1: Capítulo 4" }, { id: 3205, title: "T1: Capítulo 5" }, { id: 3206, title: "T1: Capítulo 6" }, { id: 3207, title: "T1: Capítulo 7" }, { id: 3208, title: "T1: Capítulo 8" }, { id: 3209, title: "T1: Capítulo 9" }]
-                }
-            },
-            {
-                id: 33, title: "Mindhunter", year: 2019, rating: "8.1", genre: "Drama, Crimen", type: "series", img: "https://image.tmdb.org/t/p/w342/r879U97gL9v6vH6e3C6w8F0B86c.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 3301, title: "T1: Capítulo 1" }, { id: 3302, title: "T1: Capítulo 2" }, { id: 3303, title: "T1: Capítulo 3" }, { id: 3304, title: "T1: Capítulo 4" }, { id: 3305, title: "T1: Capítulo 5" }, { id: 3306, title: "T1: Capítulo 6" }, { id: 3307, title: "T1: Capítulo 7" }, { id: 3308, title: "T1: Capítulo 8" }, { id: 3309, title: "T1: Capítulo 9" }, { id: 3310, title: "T1: Capítulo 10" }],
-                    "Temporada 2": [{ id: 3311, title: "T2: Capítulo 1" }, { id: 3312, title: "T2: Capítulo 2" }, { id: 3313, title: "T2: Capítulo 3" }, { id: 3314, title: "T2: Capítulo 4" }, { id: 3315, title: "T2: Capítulo 5" }, { id: 3316, title: "T2: Capítulo 6" }, { id: 3317, title: "T2: Capítulo 7" }, { id: 3318, title: "T2: Capítulo 8" }, { id: 3319, title: "T2: Capítulo 9" }]
-                }
-            },
-            {
-                id: 34, title: "True Detective", year: 2024, rating: "8.3", genre: "Crimen, Misterio", type: "series", img: "https://image.tmdb.org/t/p/w342/or6Wwz6rA0gX282hHIsE9R96S9S.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 3401, title: "T1: Capítulo 1" }, { id: 3402, title: "T1: Capítulo 2" }, { id: 3403, title: "T1: Capítulo 3" }, { id: 3404, title: "T1: Capítulo 4" }, { id: 3405, title: "T1: Capítulo 5" }, { id: 3406, title: "T1: Capítulo 6" }, { id: 3407, title: "T1: Capítulo 7" }, { id: 3408, title: "T1: Capítulo 8" }],
-                    "Temporada 2": [{ id: 3409, title: "T2: Capítulo 1" }, { id: 3410, title: "T2: Capítulo 2" }, { id: 3411, title: "T2: Capítulo 3" }, { id: 3412, title: "T2: Capítulo 4" }, { id: 3413, title: "T2: Capítulo 5" }, { id: 3414, title: "T2: Capítulo 6" }, { id: 3415, title: "T2: Capítulo 7" }, { id: 3416, title: "T2: Capítulo 8" }],
-                    "Temporada 3": [{ id: 3417, title: "T3: Capítulo 1" }, { id: 3418, title: "T3: Capítulo 2" }, { id: 3419, title: "T3: Capítulo 3" }, { id: 3420, title: "T3: Capítulo 4" }, { id: 3421, title: "T3: Capítulo 5" }, { id: 3422, title: "T3: Capítulo 6" }, { id: 3423, title: "T3: Capítulo 7" }, { id: 3424, title: "T3: Capítulo 8" }],
-                    "Temporada 4": [{ id: 3425, title: "T4: Capítulo 1" }, { id: 3426, title: "T4: Capítulo 2" }, { id: 3427, title: "T4: Capítulo 3" }, { id: 3428, title: "T4: Capítulo 4" }, { id: 3429, title: "T4: Capítulo 5" }, { id: 3430, title: "T4: Capítulo 6" }]
-                }
-            },
-            {
-                id: 35, title: "The Mandalorian", year: 2023, rating: "8.4", genre: "Sci-Fi, Acción", type: "series", img: "https://image.tmdb.org/t/p/w342/eY9L46A6v7bST96XpSszD9nd0w8.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 3501, title: "T1: Capítulo 1" }, { id: 3502, title: "T1: Capítulo 2" }, { id: 3503, title: "T1: Capítulo 3" }, { id: 3504, title: "T1: Capítulo 4" }, { id: 3505, title: "T1: Capítulo 5" }, { id: 3506, title: "T1: Capítulo 6" }, { id: 3507, title: "T1: Capítulo 7" }, { id: 3508, title: "T1: Capítulo 8" }],
-                    "Temporada 2": [{ id: 3509, title: "T2: Capítulo 1" }, { id: 3510, title: "T2: Capítulo 2" }, { id: 3511, title: "T2: Capítulo 3" }, { id: 3512, title: "T2: Capítulo 4" }, { id: 3513, title: "T2: Capítulo 5" }, { id: 3514, title: "T2: Capítulo 6" }, { id: 3515, title: "T2: Capítulo 7" }, { id: 3516, title: "T2: Capítulo 8" }],
-                    "Temporada 3": [{ id: 3517, title: "T3: Capítulo 1" }, { id: 3518, title: "T3: Capítulo 2" }, { id: 3519, title: "T3: Capítulo 3" }, { id: 3520, title: "T3: Capítulo 4" }, { id: 3521, title: "T3: Capítulo 5" }, { id: 3522, title: "T3: Capítulo 6" }, { id: 3523, title: "T3: Capítulo 7" }, { id: 3524, title: "T3: Capítulo 8" }]
-                }
-            },
-
-
-            {
-                id: 25, title: "Chernobyl", year: 2019, rating: "9.4", genre: "Drama, Historia", type: "series", img: "https://image.tmdb.org/t/p/w342/hlLXt2tOPT6RRnjiBhIyG1nmjZ8.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 2501, title: "T1: Capítulo 1" }, { id: 2502, title: "T1: Capítulo 2" }, { id: 2503, title: "T1: Capítulo 3" }, { id: 2504, title: "T1: Capítulo 4" }, { id: 2505, title: "T1: Capítulo 5" }]
-                }
-            },
-            {
-                id: 26, title: "Euphoria", year: 2022, rating: "8.3", genre: "Drama", type: "series", img: "https://image.tmdb.org/t/p/w342/j57xKV356Jmcr1UBn5A7GgTeF9q.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 2601, title: "T1: Capítulo 1" }, { id: 2602, title: "T1: Capítulo 2" }, { id: 2603, title: "T1: Capítulo 3" }, { id: 2604, title: "T1: Capítulo 4" }, { id: 2605, title: "T1: Capítulo 5" }, { id: 2606, title: "T1: Capítulo 6" }, { id: 2607, title: "T1: Capítulo 7" }, { id: 2608, title: "T1: Capítulo 8" }],
-                    "Temporada 2": [{ id: 2609, title: "T2: Capítulo 1" }, { id: 2610, title: "T2: Capítulo 2" }, { id: 2611, title: "T2: Capítulo 3" }, { id: 2612, title: "T2: Capítulo 4" }, { id: 2613, title: "T2: Capítulo 5" }, { id: 2614, title: "T2: Capítulo 6" }, { id: 2615, title: "T2: Capítulo 7" }, { id: 2616, title: "T2: Capítulo 8" }]
-                }
-            },
-            {
-                id: 27, title: "Loki", year: 2023, rating: "8.2", genre: "Sci-Fi, Acción", type: "series", img: "https://image.tmdb.org/t/p/w342/oJdV1w3N5x2kNh97fs494JmME5C.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 2701, title: "T1: Capítulo 1" }, { id: 2702, title: "T1: Capítulo 2" }, { id: 2703, title: "T1: Capítulo 3" }, { id: 2704, title: "T1: Capítulo 4" }, { id: 2705, title: "T1: Capítulo 5" }, { id: 2706, title: "T1: Capítulo 6" }],
-                    "Temporada 2": [{ id: 2707, title: "T2: Capítulo 1" }, { id: 2708, title: "T2: Capítulo 2" }, { id: 2709, title: "T2: Capítulo 3" }, { id: 2710, title: "T2: Capítulo 4" }, { id: 2711, title: "T2: Capítulo 5" }, { id: 2712, title: "T2: Capítulo 6" }]
-                }
-            },
-            {
-                id: 28, title: "The Bear", year: 2024, rating: "8.5", genre: "Drama, Comedia", type: "series", img: "https://image.tmdb.org/t/p/w342/d83764k18b2c6U1wQJq9E07664h.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 2801, title: "T1: Capítulo 1" }, { id: 2802, title: "T1: Capítulo 2" }, { id: 2803, title: "T1: Capítulo 3" }, { id: 2804, title: "T1: Capítulo 4" }, { id: 2805, title: "T1: Capítulo 5" }, { id: 2806, title: "T1: Capítulo 6" }, { id: 2807, title: "T1: Capítulo 7" }, { id: 2808, title: "T1: Capítulo 8" }],
-                    "Temporada 2": [{ id: 2809, title: "T2: Capítulo 1" }, { id: 2810, title: "T2: Capítulo 2" }, { id: 2811, title: "T2: Capítulo 3" }, { id: 2812, title: "T2: Capítulo 4" }, { id: 2813, title: "T2: Capítulo 5" }, { id: 2814, title: "T2: Capítulo 6" }, { id: 2815, title: "T2: Capítulo 7" }, { id: 2816, title: "T2: Capítulo 8" }, { id: 2817, title: "T2: Capítulo 9" }, { id: 2818, title: "T2: Capítulo 10" }],
-                    "Temporada 3": [{ id: 2819, title: "T3: Capítulo 1" }, { id: 2820, title: "T3: Capítulo 2" }, { id: 2821, title: "T3: Capítulo 3" }, { id: 2822, title: "T3: Capítulo 4" }, { id: 2823, title: "T3: Capítulo 5" }, { id: 2824, title: "T3: Capítulo 6" }, { id: 2825, title: "T3: Capítulo 7" }, { id: 2826, title: "T3: Capítulo 8" }, { id: 2827, title: "T3: Capítulo 9" }, { id: 2828, title: "T3: Capítulo 10" }]
-                }
-            },
-            {
-                id: 29, title: "Severance", year: 2022, rating: "8.7", genre: "Misterio, Sci-Fi", type: "series", img: "https://image.tmdb.org/t/p/w342/72P0Q2695w46vMcn245P4mEoL8c.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 2901, title: "T1: Capítulo 1" }, { id: 2902, title: "T1: Capítulo 2" }, { id: 2903, title: "T1: Capítulo 3" }, { id: 2904, title: "T1: Capítulo 4" }, { id: 2905, title: "T1: Capítulo 5" }, { id: 2906, title: "T1: Capítulo 6" }, { id: 2907, title: "T1: Capítulo 7" }, { id: 2908, title: "T1: Capítulo 8" }, { id: 2909, title: "T1: Capítulo 9" }]
-                }
-            },
-
-
-            {
-                id: 21, title: "Game of Thrones", year: 2019, rating: "9.2", genre: "Drama, Fantasía", type: "series", img: "https://image.tmdb.org/t/p/w342/1XS1nmg93t46vV3mG3uGjK67dFz.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 2101, title: "T1: Capítulo 1" }, { id: 2102, title: "T1: Capítulo 2" }, { id: 2103, title: "T1: Capítulo 3" }, { id: 2104, title: "T1: Capítulo 4" }, { id: 2105, title: "T1: Capítulo 5" }, { id: 2106, title: "T1: Capítulo 6" }, { id: 2107, title: "T1: Capítulo 7" }, { id: 2108, title: "T1: Capítulo 8" }, { id: 2109, title: "T1: Capítulo 9" }, { id: 2110, title: "T1: Capítulo 10" }],
-                    "Temporada 2": [{ id: 2111, title: "T2: Capítulo 1" }, { id: 2112, title: "T2: Capítulo 2" }, { id: 2113, title: "T2: Capítulo 3" }, { id: 2114, title: "T2: Capítulo 4" }, { id: 2115, title: "T2: Capítulo 5" }, { id: 2116, title: "T2: Capítulo 6" }, { id: 2117, title: "T2: Capítulo 7" }, { id: 2118, title: "T2: Capítulo 8" }, { id: 2119, title: "T2: Capítulo 9" }, { id: 2120, title: "T2: Capítulo 10" }],
-                    "Temporada 3": [{ id: 2121, title: "T3: Capítulo 1" }, { id: 2122, title: "T3: Capítulo 2" }, { id: 2123, title: "T3: Capítulo 3" }, { id: 2124, title: "T3: Capítulo 4" }, { id: 2125, title: "T3: Capítulo 5" }, { id: 2126, title: "T3: Capítulo 6" }, { id: 2127, title: "T3: Capítulo 7" }, { id: 2128, title: "T3: Capítulo 8" }, { id: 2129, title: "T3: Capítulo 9" }, { id: 2130, title: "T3: Capítulo 10" }],
-                    "Temporada 4": [{ id: 2131, title: "T4: Capítulo 1" }, { id: 2132, title: "T4: Capítulo 2" }, { id: 2133, title: "T4: Capítulo 3" }, { id: 2134, title: "T4: Capítulo 4" }, { id: 2135, title: "T4: Capítulo 5" }, { id: 2136, title: "T4: Capítulo 6" }, { id: 2137, title: "T4: Capítulo 7" }, { id: 2138, title: "T4: Capítulo 8" }, { id: 2139, title: "T4: Capítulo 9" }, { id: 2140, title: "T4: Capítulo 10" }],
-                    "Temporada 5": [{ id: 2141, title: "T5: Capítulo 1" }, { id: 2142, title: "T5: Capítulo 2" }, { id: 2143, title: "T5: Capítulo 3" }, { id: 2144, title: "T5: Capítulo 4" }, { id: 2145, title: "T5: Capítulo 5" }, { id: 2146, title: "T5: Capítulo 6" }, { id: 2147, title: "T5: Capítulo 7" }, { id: 2148, title: "T5: Capítulo 8" }, { id: 2149, title: "T5: Capítulo 9" }, { id: 2150, title: "T5: Capítulo 10" }],
-                    "Temporada 6": [{ id: 2151, title: "T6: Capítulo 1" }, { id: 2152, title: "T6: Capítulo 2" }, { id: 2153, title: "T6: Capítulo 3" }, { id: 2154, title: "T6: Capítulo 4" }, { id: 2155, title: "T6: Capítulo 5" }, { id: 2156, title: "T6: Capítulo 6" }, { id: 2157, title: "T6: Capítulo 7" }, { id: 2158, title: "T6: Capítulo 8" }, { id: 2159, title: "T6: Capítulo 9" }, { id: 2160, title: "T6: Capítulo 10" }],
-                    "Temporada 7": [{ id: 2161, title: "T7: Capítulo 1" }, { id: 2162, title: "T7: Capítulo 2" }, { id: 2163, title: "T7: Capítulo 3" }, { id: 2164, title: "T7: Capítulo 4" }, { id: 2165, title: "T7: Capítulo 5" }, { id: 2166, title: "T7: Capítulo 6" }, { id: 2167, title: "T7: Capítulo 7" }],
-                    "Temporada 8": [{ id: 2168, title: "T8: Capítulo 1" }, { id: 2169, title: "T8: Capítulo 2" }, { id: 2170, title: "T8: Capítulo 3" }, { id: 2171, title: "T8: Capítulo 4" }, { id: 2172, title: "T8: Capítulo 5" }, { id: 2173, title: "T8: Capítulo 6" }]
-                }
-            },
-            {
-                id: 22, title: "Black Mirror", year: 2023, rating: "8.8", genre: "Sci-Fi, Antología", type: "series", img: "https://image.tmdb.org/t/p/w342/7Uj1m4xi48lh7U1dontZ9iYv2zp.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 2201, title: "T1: Capítulo 1" }, { id: 2202, title: "T1: Capítulo 2" }, { id: 2203, title: "T1: Capítulo 3" }],
-                    "Temporada 2": [{ id: 2204, title: "T2: Capítulo 1" }, { id: 2205, title: "T2: Capítulo 2" }, { id: 2206, title: "T2: Capítulo 3" }, { id: 2207, title: "T2: Especial Blanca Navidad" }],
-                    "Temporada 3": [{ id: 2208, title: "T3: Capítulo 1" }, { id: 2209, title: "T3: Capítulo 2" }, { id: 2210, title: "T3: Capítulo 3" }, { id: 2211, title: "T3: Capítulo 4" }, { id: 2212, title: "T3: Capítulo 5" }, { id: 2213, title: "T3: Capítulo 6" }],
-                    "Temporada 4": [{ id: 2214, title: "T4: Capítulo 1" }, { id: 2215, title: "T4: Capítulo 2" }, { id: 2216, title: "T4: Capítulo 3" }, { id: 2217, title: "T4: Capítulo 4" }, { id: 2218, title: "T4: Capítulo 5" }, { id: 2219, title: "T4: Capítulo 6" }],
-                    "Temporada 5": [{ id: 2220, title: "T5: Capítulo 1" }, { id: 2221, title: "T5: Capítulo 2" }, { id: 2222, title: "T5: Capítulo 3" }],
-                    "Temporada 6": [{ id: 2223, title: "T6: Capítulo 1" }, { id: 2224, title: "T6: Capítulo 2" }, { id: 2225, title: "T6: Capítulo 3" }, { id: 2226, title: "T6: Capítulo 4" }, { id: 2227, title: "T6: Capítulo 5" }]
-                }
-            },
-            {
-                id: 23, title: "The Walking Dead", year: 2022, rating: "8.1", genre: "Terror, Drama", type: "series", img: "https://image.tmdb.org/t/p/w342/reksm3g3v9e4vz3mzgpzszszs01.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 2301, title: "T1: Capítulo 1" }, { id: 2302, title: "T1: Capítulo 2" }, { id: 2303, title: "T1: Capítulo 3" }, { id: 2304, title: "T1: Capítulo 4" }, { id: 2305, title: "T1: Capítulo 5" }, { id: 2306, title: "T1: Capítulo 6" }],
-                    "Temporada 2": [{ id: 2307, title: "T2: Capítulo 1" }, { id: 2308, title: "T2: Capítulo 2" }, { id: 2309, title: "T2: Capítulo 3" }, { id: 2310, title: "T2: Capítulo 4" }, { id: 2311, title: "T2: Capítulo 5" }, { id: 2312, title: "T2: Capítulo 6" }, { id: 2313, title: "T2: Capítulo 7" }, { id: 2314, title: "T2: Capítulo 8" }, { id: 2315, title: "T2: Capítulo 9" }, { id: 2316, title: "T2: Capítulo 10" }, { id: 2317, title: "T2: Capítulo 11" }, { id: 2318, title: "T2: Capítulo 12" }, { id: 2319, title: "T2: Capítulo 13" }],
-                    "Temporada 3": [{ id: 2320, title: "T3: Capítulo 1" }, { id: 2321, title: "T3: Capítulo 2" }, { id: 2322, title: "T3: Capítulo 3" }, { id: 2323, title: "T3: Capítulo 4" }, { id: 2324, title: "T3: Capítulo 5" }, { id: 2325, title: "T3: Capítulo 6" }, { id: 2326, title: "T3: Capítulo 7" }, { id: 2327, title: "T3: Capítulo 8" }, { id: 2328, title: "T3: Capítulo 9" }, { id: 2329, title: "T3: Capítulo 10" }, { id: 2330, title: "T3: Capítulo 11" }, { id: 2331, title: "T3: Capítulo 12" }, { id: 2332, title: "T3: Capítulo 13" }, { id: 2333, title: "T3: Capítulo 14" }, { id: 2334, title: "T3: Capítulo 15" }, { id: 2335, title: "T3: Capítulo 16" }],
-                    "Temporada 4": [{ id: 2336, title: "T4: Capítulo 1" }, { id: 2337, title: "T4: Capítulo 2" }, { id: 2338, title: "T4: Capítulo 3" }, { id: 2339, title: "T4: Capítulo 4" }, { id: 2340, title: "T4: Capítulo 5" }, { id: 2341, title: "T4: Capítulo 6" }, { id: 2342, title: "T4: Capítulo 7" }, { id: 2343, title: "T4: Capítulo 8" }, { id: 2344, title: "T4: Capítulo 9" }, { id: 2345, title: "T4: Capítulo 10" }, { id: 2346, title: "T4: Capítulo 11" }, { id: 2347, title: "T4: Capítulo 12" }, { id: 2348, title: "T4: Capítulo 13" }, { id: 2349, title: "T4: Capítulo 14" }, { id: 2350, title: "T4: Capítulo 15" }, { id: 2351, title: "T4: Capítulo 16" }],
-                    "Temporada 5": [{ id: 2352, title: "T5: Capítulo 1" }, { id: 2353, title: "T5: Capítulo 2" }, { id: 2354, title: "T5: Capítulo 3" }, { id: 2355, title: "T5: Capítulo 4" }, { id: 2356, title: "T5: Capítulo 5" }, { id: 2357, title: "T5: Capítulo 6" }, { id: 2358, title: "T5: Capítulo 7" }, { id: 2359, title: "T5: Capítulo 8" }, { id: 2360, title: "T5: Capítulo 9" }, { id: 2361, title: "T5: Capítulo 10" }, { id: 2362, title: "T5: Capítulo 11" }, { id: 2363, title: "T5: Capítulo 12" }, { id: 2364, title: "T5: Capítulo 13" }, { id: 2365, title: "T5: Capítulo 14" }, { id: 2366, title: "T5: Capítulo 15" }, { id: 2367, title: "T5: Capítulo 16" }],
-                    "Temporada 6": [{ id: 2368, title: "T6: Capítulo 1" }, { id: 2369, title: "T6: Capítulo 2" }, { id: 2370, title: "T6: Capítulo 3" }, { id: 2371, title: "T6: Capítulo 4" }, { id: 2372, title: "T6: Capítulo 5" }, { id: 2373, title: "T6: Capítulo 6" }, { id: 2374, title: "T6: Capítulo 7" }, { id: 2375, title: "T6: Capítulo 8" }, { id: 2376, title: "T6: Capítulo 9" }, { id: 2377, title: "T6: Capítulo 10" }, { id: 2378, title: "T6: Capítulo 11" }, { id: 2379, title: "T6: Capítulo 12" }, { id: 2380, title: "T6: Capítulo 13" }, { id: 2381, title: "T6: Capítulo 14" }, { id: 2382, title: "T6: Capítulo 15" }, { id: 2383, title: "T6: Capítulo 16" }],
-                    "Temporada 7": [{ id: 2384, title: "T7: Capítulo 1" }, { id: 2385, title: "T7: Capítulo 2" }, { id: 2386, title: "T7: Capítulo 3" }, { id: 2387, title: "T7: Capítulo 4" }, { id: 2388, title: "T7: Capítulo 5" }, { id: 2389, title: "T7: Capítulo 6" }, { id: 2390, title: "T7: Capítulo 7" }, { id: 2391, title: "T7: Capítulo 8" }, { id: 2392, title: "T7: Capítulo 9" }, { id: 2393, title: "T7: Capítulo 10" }, { id: 2394, title: "T7: Capítulo 11" }, { id: 2395, title: "T7: Capítulo 12" }, { id: 2396, title: "T7: Capítulo 13" }, { id: 2397, title: "T7: Capítulo 14" }, { id: 2398, title: "T7: Capítulo 15" }, { id: 2399, title: "T7: Capítulo 16" }],
-                    "Temporada 8": [{ id: 2400, title: "T8: Capítulo 1" }, { id: 2401, title: "T8: Capítulo 2" }, { id: 2402, title: "T8: Capítulo 3" }, { id: 2403, title: "T8: Capítulo 4" }, { id: 2404, title: "T8: Capítulo 5" }, { id: 2405, title: "T8: Capítulo 6" }, { id: 2406, title: "T8: Capítulo 7" }, { id: 2407, title: "T8: Capítulo 8" }, { id: 2408, title: "T8: Capítulo 9" }, { id: 2409, title: "T8: Capítulo 10" }, { id: 2410, title: "T8: Capítulo 11" }, { id: 2411, title: "T8: Capítulo 12" }, { id: 2412, title: "T8: Capítulo 13" }, { id: 2413, title: "T8: Capítulo 14" }, { id: 2414, title: "T8: Capítulo 15" }, { id: 2415, title: "T8: Capítulo 16" }],
-                    "Temporada 9": [{ id: 2416, title: "T9: Capítulo 1" }, { id: 2417, title: "T9: Capítulo 2" }, { id: 2418, title: "T9: Capítulo 3" }, { id: 2419, title: "T9: Capítulo 4" }, { id: 2420, title: "T9: Capítulo 5" }, { id: 2421, title: "T9: Capítulo 6" }, { id: 2422, title: "T9: Capítulo 7" }, { id: 2423, title: "T9: Capítulo 8" }, { id: 2424, title: "T9: Capítulo 9" }, { id: 2425, title: "T9: Capítulo 10" }, { id: 2426, title: "T9: Capítulo 11" }, { id: 2427, title: "T9: Capítulo 12" }, { id: 2428, title: "T9: Capítulo 13" }, { id: 2429, title: "T9: Capítulo 14" }, { id: 2430, title: "T9: Capítulo 15" }, { id: 2431, title: "T9: Capítulo 16" }],
-                    "Temporada 10": [{ id: 2432, title: "T10: Capítulo 1" }, { id: 2433, title: "T10: Capítulo 2" }, { id: 2434, title: "T10: Capítulo 3" }, { id: 2435, title: "T10: Capítulo 4" }, { id: 2436, title: "T10: Capítulo 5" }, { id: 2437, title: "T10: Capítulo 6" }, { id: 2438, title: "T10: Capítulo 7" }, { id: 2439, title: "T10: Capítulo 8" }, { id: 2440, title: "T10: Capítulo 9" }, { id: 2441, title: "T10: Capítulo 10" }, { id: 2442, title: "T10: Capítulo 11" }, { id: 2443, title: "T10: Capítulo 12" }, { id: 2444, title: "T10: Capítulo 13" }, { id: 2445, title: "T10: Capítulo 14" }, { id: 2446, title: "T10: Capítulo 15" }, { id: 2447, title: "T10: Capítulo 16" }, { id: 2448, title: "T10: Capítulo 17" }, { id: 2449, title: "T10: Capítulo 18" }, { id: 2450, title: "T10: Capítulo 19" }, { id: 2451, title: "T10: Capítulo 20" }, { id: 2452, title: "T10: Capítulo 21" }, { id: 2453, title: "T10: Capítulo 22" }],
-                    "Temporada 11": [{ id: 2454, title: "T11: Capítulo 1" }, { id: 2455, title: "T11: Capítulo 2" }, { id: 2456, title: "T11: Capítulo 3" }, { id: 2457, title: "T11: Capítulo 4" }, { id: 2458, title: "T11: Capítulo 5" }, { id: 2459, title: "T11: Capítulo 6" }, { id: 2460, title: "T11: Capítulo 7" }, { id: 2461, title: "T11: Capítulo 8" }, { id: 2462, title: "T11: Capítulo 9" }, { id: 2463, title: "T11: Capítulo 10" }, { id: 2464, title: "T11: Capítulo 11" }, { id: 2465, title: "T11: Capítulo 12" }, { id: 2466, title: "T11: Capítulo 13" }, { id: 2467, title: "T11: Capítulo 14" }, { id: 2468, title: "T11: Capítulo 15" }, { id: 2469, title: "T11: Capítulo 16" }, { id: 2470, title: "T11: Capítulo 17" }, { id: 2471, title: "T11: Capítulo 18" }, { id: 2472, title: "T11: Capítulo 19" }, { id: 2473, title: "T11: Capítulo 20" }, { id: 2474, title: "T11: Capítulo 21" }, { id: 2475, title: "T11: Capítulo 22" }, { id: 2476, title: "T11: Capítulo 23" }, { id: 2477, title: "T11: Capítulo 24" }]
-                }
-            },
-            {
-                id: 24, title: "Vikings", year: 2020, rating: "8.5", genre: "Acción, Historia", type: "series", img: "https://image.tmdb.org/t/p/w342/bQL8wmV9X0Dont9VpDngYV2zp9e.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 2501, title: "T1: Capítulo 1" }, { id: 2502, title: "T1: Capítulo 2" }, { id: 2503, title: "T1: Capítulo 3" }, { id: 2504, title: "T1: Capítulo 4" }, { id: 2505, title: "T1: Capítulo 5" }, { id: 2506, title: "T1: Capítulo 6" }, { id: 2507, title: "T1: Capítulo 7" }, { id: 2508, title: "T1: Capítulo 8" }, { id: 2509, title: "T1: Capítulo 9" }],
-                    "Temporada 2": [{ id: 2510, title: "T2: Capítulo 1" }, { id: 2511, title: "T2: Capítulo 2" }, { id: 2512, title: "T2: Capítulo 3" }, { id: 2513, title: "T2: Capítulo 4" }, { id: 2514, title: "T2: Capítulo 5" }, { id: 2515, title: "T2: Capítulo 6" }, { id: 2516, title: "T2: Capítulo 7" }, { id: 2517, title: "T2: Capítulo 8" }, { id: 2518, title: "T2: Capítulo 9" }, { id: 2519, title: "T2: Capítulo 10" }],
-                    "Temporada 3": [{ id: 2520, title: "T3: Capítulo 1" }, { id: 2521, title: "T3: Capítulo 2" }, { id: 2522, title: "T3: Capítulo 3" }, { id: 2523, title: "T3: Capítulo 4" }, { id: 2524, title: "T3: Capítulo 5" }, { id: 2525, title: "T3: Capítulo 6" }, { id: 2526, title: "T3: Capítulo 7" }, { id: 2527, title: "T3: Capítulo 8" }, { id: 2528, title: "T3: Capítulo 9" }, { id: 2529, title: "T3: Capítulo 10" }],
-                    "Temporada 4": [{ id: 2530, title: "T4: Capítulo 1" }, { id: 2531, title: "T4: Capítulo 2" }, { id: 2532, title: "T4: Capítulo 3" }, { id: 2533, title: "T4: Capítulo 4" }, { id: 2534, title: "T4: Capítulo 5" }, { id: 2535, title: "T4: Capítulo 6" }, { id: 2536, title: "T4: Capítulo 7" }, { id: 2537, title: "T4: Capítulo 8" }, { id: 2538, title: "T4: Capítulo 9" }, { id: 2539, title: "T4: Capítulo 10" }, { id: 2540, title: "T4: Capítulo 11" }, { id: 2541, title: "T4: Capítulo 12" }, { id: 2542, title: "T4: Capítulo 13" }, { id: 2543, title: "T4: Capítulo 14" }, { id: 2544, title: "T4: Capítulo 15" }, { id: 2545, title: "T4: Capítulo 16" }, { id: 2546, title: "T4: Capítulo 17" }, { id: 2547, title: "T4: Capítulo 18" }, { id: 2548, title: "T4: Capítulo 19" }, { id: 2549, title: "T4: Capítulo 20" }],
-                    "Temporada 5": [{ id: 2550, title: "T5: Capítulo 1" }, { id: 2551, title: "T5: Capítulo 2" }, { id: 2552, title: "T5: Capítulo 3" }, { id: 2553, title: "T5: Capítulo 4" }, { id: 2554, title: "T5: Capítulo 5" }, { id: 2555, title: "T5: Capítulo 6" }, { id: 2556, title: "T5: Capítulo 7" }, { id: 2557, title: "T5: Capítulo 8" }, { id: 2558, title: "T5: Capítulo 9" }, { id: 2559, title: "T5: Capítulo 10" }, { id: 2560, title: "T5: Capítulo 11" }, { id: 2561, title: "T5: Capítulo 12" }, { id: 2562, title: "T5: Capítulo 13" }, { id: 2563, title: "T5: Capítulo 14" }, { id: 2564, title: "T5: Capítulo 15" }, { id: 2565, title: "T5: Capítulo 16" }, { id: 2566, title: "T5: Capítulo 17" }, { id: 2567, title: "T5: Capítulo 18" }, { id: 2568, title: "T5: Capítulo 19" }, { id: 2569, title: "T5: Capítulo 20" }],
-                    "Temporada 6": [{ id: 2570, title: "T6: Capítulo 1" }, { id: 2571, title: "T6: Capítulo 2" }, { id: 2572, title: "T6: Capítulo 3" }, { id: 2573, title: "T6: Capítulo 4" }, { id: 2574, title: "T6: Capítulo 5" }, { id: 2575, title: "T6: Capítulo 6" }, { id: 2576, title: "T6: Capítulo 7" }, { id: 2577, title: "T6: Capítulo 8" }, { id: 2578, title: "T6: Capítulo 9" }, { id: 2579, title: "T6: Capítulo 10" }, { id: 2580, title: "T6: Capítulo 11" }, { id: 2581, title: "T6: Capítulo 12" }, { id: 2582, title: "T6: Capítulo 13" }, { id: 2583, title: "T6: Capítulo 14" }, { id: 2584, title: "T6: Capítulo 15" }, { id: 2585, title: "T6: Capítulo 16" }, { id: 2586, title: "T6: Capítulo 17" }, { id: 2587, title: "T6: Capítulo 18" }, { id: 2588, title: "T6: Capítulo 19" }, { id: 2589, title: "T6: Capítulo 20" }]
-                }
-            },
-            {
-                id: 25, title: "The Umbrella Academy", year: 2024, rating: "7.9", genre: "Sci-Fi, Acción", type: "series", img: "https://image.tmdb.org/t/p/w342/r9747942lhdontZ9iYv2zp9u4.jpg",
-                seasons: {
-                    "Temporada 1": [{ id: 2601, title: "T1: Capítulo 1" }, { id: 2602, title: "T1: Capítulo 2" }, { id: 2603, title: "T1: Capítulo 3" }, { id: 2604, title: "T1: Capítulo 4" }, { id: 2605, title: "T1: Capítulo 5" }, { id: 2606, title: "T1: Capítulo 6" }, { id: 2607, title: "T1: Capítulo 7" }, { id: 2608, title: "T1: Capítulo 8" }, { id: 2609, title: "T1: Capítulo 9" }, { id: 2610, title: "T1: Capítulo 10" }],
-                    "Temporada 2": [{ id: 2611, title: "T2: Capítulo 1" }, { id: 2612, title: "T2: Capítulo 2" }, { id: 2613, title: "T2: Capítulo 3" }, { id: 2614, title: "T2: Capítulo 4" }, { id: 2615, title: "T2: Capítulo 5" }, { id: 2616, title: "T2: Capítulo 6" }, { id: 2617, title: "T2: Capítulo 7" }, { id: 2618, title: "T2: Capítulo 8" }, { id: 2619, title: "T2: Capítulo 9" }, { id: 2620, title: "T2: Capítulo 10" }],
-                    "Temporada 3": [{ id: 2621, title: "T3: Capítulo 1" }, { id: 2622, title: "T3: Capítulo 2" }, { id: 2623, title: "T3: Capítulo 3" }, { id: 2624, title: "T3: Capítulo 4" }, { id: 2625, title: "T3: Capítulo 5" }, { id: 2626, title: "T3: Capítulo 6" }, { id: 2627, title: "T3: Capítulo 7" }, { id: 2628, title: "T3: Capítulo 8" }, { id: 2629, title: "T3: Capítulo 9" }, { id: 2630, title: "T3: Capítulo 10" }],
-                    "Temporada 4": [{ id: 2631, title: "T4: Capítulo 1" }, { id: 2632, title: "T4: Capítulo 2" }, { id: 2633, title: "T4: Capítulo 3" }, { id: 2634, title: "T4: Capítulo 4" }, { id: 2635, title: "T4: Capítulo 5" }, { id: 2636, title: "T4: Capítulo 6" }]
-                }
-            }
-        ];
-
-        // --- ENRUTADOR INTERNO INVISIBLE BLINDADO DE EVENTOS ---
-        function goToSection(id) {
-            const nativeLink = document.createElement('a');
-            nativeLink.href = 'go:' + id;
-            nativeLink.click();
-        }
-
-        // --- MANEJO DE ESTADO LOCAL ---
-        let favorites = JSON.parse(localStorage.getItem('stream_favs')) || [101, 14];
-        let history = JSON.parse(localStorage.getItem('stream_history')) || [];
-        let appTheme = localStorage.getItem('stream_theme') || 'dark';
-        let appFontSize = localStorage.getItem('stream_fontsize') || 'normal';
-        let appBrandColor = localStorage.getItem('stream_brandcolor') || '#8b5cf6';
-
-        let heroItems = db.filter(item => item.isHero);
-        let currentHeroIndex = 0;
-        let heroInterval = null;
-        let activeQuickFilter = null;
-
-        window.addEventListener('DOMContentLoaded', () => {
-            applyInitialSettings();
-            renderAllSections();
-            initHeroSlider();
-            
-            setTimeout(() => {
-                const splash = document.getElementById('splashScreen');
-                if (splash) splash.classList.add('fade-out');
-            }, 1200);
+            });
         });
 
-        function applyInitialSettings() {
-            document.documentElement.setAttribute('data-theme', appTheme);
-            document.body.className = `font-${appFontSize}`;
-            document.documentElement.style.setProperty('--accent-color', appBrandColor);
-
-            document.getElementById('themeModeCheck').checked = (appTheme === 'light');
-            document.getElementById('brandColorSelect').value = appBrandColor;
-            document.getElementById('fontSizeSelect').value = appFontSize;
-        }
-
-        // LÓGICA DE REPRODUCCIÓN (HISTORIAL)
-        function playMedia(id, parentId = null) {
-            let idToSave = parentId ? parentId : id;
-            if (!history.includes(idToSave)) {
-                history.unshift(idToSave);
-                if (history.length > 20) history.pop();
-                localStorage.setItem('stream_history', JSON.stringify(history));
-            }
-            goToSection(id);
-        }
-
-        // --- CONTROL DEL MODAL DE CAPÍTULOS DE SERIES CON MULTITEMPORADAS ---
-        function openEpisodesModal(seriesId) {
-            const series = db.find(item => item.id === seriesId);
-            if (!series || !series.seasons) return;
-
-            document.getElementById('mSeriesTitle').innerText = series.title;
-            const tabsContainer = document.getElementById('mSeasonTabs');
-            const seasonsKeys = Object.keys(series.seasons);
+        // Buscador Dinámico en Tiempo Real
+        const searchInput = document.getElementById('movie-search');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.movie-card');
             
-            // Generar Tabs de las temporadas
-            tabsContainer.innerHTML = seasonsKeys.map((season, idx) => `
-                <button class="season-tab ${idx === 0 ? 'active' : ''}" onclick="switchSeasonTab(this, '${seriesId}', '${season}')">
-                    ${season}
-                </button>
-            `).join('');
-
-            // Cargar por defecto la primera temporada
-            renderEpisodesOfSeason(series, seasonsKeys[0]);
-
-            document.getElementById('seriesModal').classList.add('show');
-        }
-
-        function switchSeasonTab(btn, seriesId, seasonName) {
-            document.querySelectorAll('.season-tab').forEach(tab => tab.classList.remove('active'));
-            btn.classList.add('active');
-            const series = db.find(item => item.id == seriesId);
-            if (series) renderEpisodesOfSeason(series, seasonName);
-        }
-
-        function renderEpisodesOfSeason(series, seasonName) {
-            const container = document.getElementById('mEpisodesContainer');
-            const episodes = series.seasons[seasonName] || [];
-            
-            container.innerHTML = episodes.map(ep => `
-                <button class="episode-row-btn" onclick="playMedia(${ep.id}, ${series.id}); closeSeriesModal();">
-                    <span>${ep.title}</span>
-                    <i class="ri-play-circle-fill"></i>
-                </button>
-            `).join('');
-        }
-
-        function closeSeriesModal() {
-            document.getElementById('seriesModal').classList.remove('show');
-        }
-
-        function renderAllSections() {
-            renderTop10();
-            renderHorizontalScroll('scrollMovies', db.filter(item => item.type === 'movie' && !item.isHero && !item.isTop10));
-            renderHorizontalScroll('scrollSciFi', db.filter(item => item.genre.toLowerCase().includes('ciencia') || item.genre.toLowerCase().includes('terror')));
-            renderHorizontalScroll('scrollSeries', db.filter(item => item.type === 'series'));
-            renderHorizontalScroll('scrollAnime', db.filter(item => item.type === 'Anime'));
-        }
-
-        function renderHorizontalScroll(containerId, items) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            container.innerHTML = items.map(item => {
-                const actionClick = item.type === 'series' ? `openEpisodesModal(${item.id})` : `playMedia(${item.id})`;
-                return `
-                    <div class="movie-poster-card">
-                        <button class="fav-toast-btn ${favorites.includes(item.id) ? 'is-fav' : ''}" onclick="toggleFavorite(event, ${item.id})">
-                            <i class="${favorites.includes(item.id) ? 'ri-heart-fill' : 'ri-heart-line'}"></i>
-                        </button>
-                        <div class="poster-wrapper" onclick="${actionClick}">
-                            <img src="${item.img}" alt="${item.title}" loading="lazy">
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderTop10() {
-            const container = document.getElementById('scrollTop10');
-            if (!container) return;
-            const top10Items = db.filter(item => item.isTop10).sort((a,b) => a.topRank - b.topRank);
-            container.innerHTML = top10Items.map(item => {
-                const actionClick = item.type === 'series' ? `openEpisodesModal(${item.id})` : `playMedia(${item.id})`;
-                return `
-                    <div class="top10-card">
-                        <span class="top10-number">${item.topRank}</span>
-                        <div class="top10-poster" onclick="${actionClick}">
-                            <img src="${item.img}" alt="${item.title}" loading="lazy">
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // --- HERO SLIDER ---
-        function initHeroSlider() {
-            if (heroItems.length === 0) return;
-            renderHeroDots();
-            updateHeroBanner();
-            startHeroAutoCycle();
-        }
-
-        function renderHeroDots() {
-            const dotsContainer = document.getElementById('heroDots');
-            if (dotsContainer) {
-                dotsContainer.innerHTML = heroItems.map((_, idx) => `<span class="dot ${idx === 0 ? 'active' : ''}" onclick="setHeroIndex(${idx})"></span>`).join('');
-            }
-        }
-
-        function updateHeroBanner() {
-            const heroCard = document.getElementById('heroCard');
-            if (!heroCard) return;
-            const item = heroItems[currentHeroIndex];
-            
-            heroCard.classList.add('fade-out');
-            setTimeout(() => {
-                heroCard.style.backgroundImage = `linear-gradient(to top, rgba(0,0,0,0.95) 15%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%), url('${item.img}')`;
-                heroCard.innerHTML = `
-                    <span class="badge-movie">Exclusivo</span>
-                    <h1>${item.title}</h1>
-                    <div class="hero-meta">
-                        <span><i class="ri-star-fill" style="color:#eab308"></i> ${item.rating}</span>
-                        <span>•</span>
-                        <span>${item.year}</span>
-                        <span>•</span>
-                        <span>${item.genre}</span>
-                    </div>
-                `;
-                heroCard.classList.remove('fade-out');
-
-                const dots = document.querySelectorAll('#heroDots .dot');
-                dots.forEach((dot, idx) => dot.classList.toggle('active', idx === currentHeroIndex));
-            }, 250);
-        }
-
-        function startHeroAutoCycle() {
-            clearInterval(heroInterval);
-            heroInterval = setInterval(() => {
-                currentHeroIndex = (currentHeroIndex + 1) % heroItems.length;
-                updateHeroBanner();
-            }, 6000);
-        }
-
-        function setHeroIndex(index) {
-            currentHeroIndex = index;
-            updateHeroBanner();
-            startHeroAutoCycle();
-        }
-
-        function triggerHeroClick() {
-            const item = heroItems[currentHeroIndex];
-            if (!item) return;
-            if (item.type === 'series') {
-                openEpisodesModal(item.id);
-            } else {
-                playMedia(item.id);
-            }
-        }
-
-        // --- NAVEGACIÓN GENERAL ---
-        function navigate(target) {
-            document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active-view'));
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-
-            const navBar = document.getElementById('bottomNavContainer');
-            const searchBox = document.getElementById('searchBox');
-            const dynamicSections = document.getElementById('dynamicSections');
-            const sSuggestions = document.getElementById('searchSuggestions');
-            const grid = document.getElementById('exploreGrid');
-
-            if (sSuggestions) sSuggestions.style.display = 'none';
-            if (navBar) navBar.classList.remove('hide-nav');
-            if (searchBox) searchBox.classList.add('show');
-            if (grid) grid.className = "explore-grid";
-
-            if (target === 'search') {
-                if (searchBox) searchBox.classList.add('show');
-                if (navBar) navBar.classList.add('hide-nav');
-                
-                const homePage = document.getElementById('homePage');
-                const navSearch = document.getElementById('navSearch');
-                const searchInput = document.getElementById('searchInput');
-                
-                if (homePage) homePage.classList.add('active-view');
-                if (navSearch) navSearch.classList.add('active');
-                if (searchInput) {
-                    searchInput.focus();
-                    const query = searchInput.value.trim();
-                    if (sSuggestions) sSuggestions.style.display = query.length > 0 ? 'none' : 'block';
+            cards.forEach(card => {
+                const title = card.querySelector('h4').innerText.toLowerCase();
+                if (title.includes(query)) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
                 }
-                return;
-            }
+            });
+        });
 
-            if (target === 'home') {
-                const searchInput = document.getElementById('searchInput');
-                if (searchInput) searchInput.value = "";
-                if (dynamicSections) dynamicSections.style.display = 'block'; 
-                activeQuickFilter = null;
-                
-                document.getElementById('btnFavs').style.backgroundColor = '';
-                document.getElementById('btnHist').style.backgroundColor = '';
-                document.getElementById('homePage').classList.add('active-view');
-                document.getElementById('navHome').classList.add('active');
-                
-            } else if (target === 'movies') {
-                showExploreGrid('Películas', db.filter(item => item.type === 'movie'));
-                document.getElementById('navMovies').classList.add('active');
-                
-            } else if (target === 'series') {
-                showExploreGrid('Series', db.filter(item => item.type === 'series'));
-                document.getElementById('navSeries').classList.add('active');
-            }
-        } 
-
-        function openSettingsPage() {
-            document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active-view'));
-            document.getElementById('settingsPage').classList.add('active-view');
-            document.getElementById('bottomNavContainer').classList.remove('hide-nav');
-        }
-
-        function goHome() { navigate('home'); }
-
-        function seeAll(type) {
-            let title = 'Explorar';
-            let items = [];
-
-            if (type === 'movie') { title = 'Todas las Películas'; items = db.filter(item => item.type === 'movie'); }
-            else if (type === 'series') { title = 'Todas las Series'; items = db.filter(item => item.type === 'series'); }
-            else if (type === 'ciencia ficción, terror') {
-                title = 'Sci-Fi & Terror';
-                items = db.filter(item => item.genre.toLowerCase().includes('ciencia') || item.genre.toLowerCase().includes('terror'));
-            } else { items = db; }
-
-            showExploreGrid(title, items);
-        }
-
-        function showExploreGrid(title, items) {
-            document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active-view'));
-            document.getElementById('exploreTitle').innerText = title;
-            const grid = document.getElementById('exploreGrid');
-            grid.innerHTML = items.map(item => {
-                const actionClick = item.type === 'series' ? `openEpisodesModal(${item.id})` : `playMedia(${item.id})`;
-                return `
-                    <div class="movie-poster-card" style="flex:unset;">
-                        <button class="fav-toast-btn ${favorites.includes(item.id) ? 'is-fav' : ''}" onclick="toggleFavorite(event, ${item.id})">
-                            <i class="${favorites.includes(item.id) ? 'ri-heart-fill' : 'ri-heart-line'}"></i>
-                        </button>
-                        <div class="poster-wrapper" style="height:165px;" onclick="${actionClick}">
-                            <img src="${item.img}" alt="${item.title}" loading="lazy">
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            document.getElementById('explorePage').classList.add('active-view');
-        }
-
-        // --- FILTROS RÁPIDOS ---
-        function toggleQuickFilter(type) {
-            const btnFavs = document.getElementById('btnFavs');
-            const btnHist = document.getElementById('btnHist');
-            const dynamicSections = document.getElementById('dynamicSections');
-
-            if (activeQuickFilter === type) {
-                activeQuickFilter = null;
-                btnFavs.style.backgroundColor = '';
-                btnHist.style.backgroundColor = '';
-                dynamicSections.style.display = 'block';
-                document.getElementById('explorePage').classList.remove('active-view');
-                document.getElementById('homePage').classList.add('active-view');
-            } else {
-                activeQuickFilter = type;
-                btnFavs.style.backgroundColor = type === 'favs' ? 'var(--accent-color)' : '';
-                btnHist.style.backgroundColor = type === 'history' ? 'var(--accent-color)' : '';
-                dynamicSections.style.display = 'none';
-
-                const targetIds = type === 'favs' ? favorites : history;
-                const filteredItems = db.filter(item => targetIds.includes(item.id));
-                showExploreGrid(type === 'favs' ? 'Tus Favoritos' : 'Historial de Reproducción', filteredItems);
-            }
-        }
-
-        function toggleFavorite(event, id) {
-            event.stopPropagation();
-            if (favorites.includes(id)) {
-                favorites = favorites.filter(favId => favId !== id);
-            } else {
-                favorites.push(id);
-            }
-            localStorage.setItem('stream_favs', JSON.stringify(favorites));
-            
-            renderAllSections();
-            if (activeQuickFilter === 'favs') {
-                showExploreGrid('Tus Favoritos', db.filter(item => favorites.includes(item.id)));
-            } else {
-                const targetBtn = event.currentTarget;
-                const icon = targetBtn.querySelector('i');
-                targetBtn.classList.toggle('is-fav');
-                icon.className = targetBtn.classList.contains('is-fav') ? 'ri-heart-fill' : 'ri-heart-line';
-            }
-        }
-
-        // --- BUSCADOR ---
-        function perfectSearch(value) {
-            const query = value.toLowerCase().trim();
-            const dynamicSections = document.getElementById('dynamicSections');
-            const sSuggestions = document.getElementById('searchSuggestions');
-            
-            if (!query) {
-                dynamicSections.style.display = 'block';
-                document.getElementById('explorePage').classList.remove('active-view');
-                if (sSuggestions) sSuggestions.style.display = 'block';
-                return;
-            }
-
-            dynamicSections.style.display = 'none';
-            if (sSuggestions) sSuggestions.style.display = 'none';
-
-            const matched = db.filter(item => item.title.toLowerCase().includes(query) || item.genre.toLowerCase().includes(query));
-            showExploreGrid(`Resultados para: "${value}"`, matched);
-        }
-
-        // --- MANEJO DE AJUSTES ---
-        function updateThemeSetting(isLight) {
-            appTheme = isLight ? 'light' : 'dark';
-            localStorage.setItem('stream_theme', appTheme);
-            document.documentElement.setAttribute('data-theme', appTheme);
-            renderAllSections();
-        }
-
-        function updateBrandColorSetting(color) {
-            appBrandColor = color;
-            localStorage.setItem('stream_brandcolor', color);
-            document.documentElement.style.setProperty('--accent-color', color);
-        }
-
-        function updateVanillaFontSizeSetting(size) {
-            appFontSize = size;
-            localStorage.setItem('stream_fontsize', size);
-            document.body.className = `font-${size}`;
-        }
+        // Navegación Activa
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                navLinks.forEach(l => l.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
     </script>
 </body>
 </html>
